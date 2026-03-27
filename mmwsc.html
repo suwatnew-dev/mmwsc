@@ -1,0 +1,1338 @@
+<!DOCTYPE html>
+<html lang="th" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>สภานักเรียนโรงเรียนเมืองมุกวิทยาคม</title>
+    <link rel="icon" type="image/png" href="https://lh3.googleusercontent.com/d/1KZef5WERFItcNV87XPcL0ICCRGl-Q3Y7">
+	
+    <!-- นำเข้า Tailwind CSS สำหรับการจัดหน้าเว็บที่รวดเร็วและ Responsive -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- นำเข้า Font 'Prompt' จาก Google Fonts เพื่อความสวยงามและอ่านง่าย -->
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- นำเข้า FontAwesome สำหรับไอคอนต่างๆ -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- นำเข้า SweetAlert2 สำหรับแจ้งเตือนการส่งข้อความ -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <!-- ตั้งค่าธีมสีและฟอนต์พื้นฐาน -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Prompt', 'sans-serif'],
+                    },
+                    colors: {
+                        mmsblue: {
+                            50: '#eff6ff',
+                            100: '#dbeafe',
+                            400: '#60a5fa', // ฟ้าสว่าง
+                            600: '#2563eb', // น้ำเงินหลัก
+                            800: '#1e40af', // น้ำเงินเข้ม
+                            900: '#1e3a8a', // น้ำเงินกรมท่า
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* สไตล์เพิ่มเติมที่เขียนแบบ Custom */
+        body {
+            font-family: 'Prompt', sans-serif;
+            background-color: #f8fafc; /* สีพื้นหลังสว่างๆ สบายตา */
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        
+        main {
+            flex-grow: 1; /* ดัน Footer ให้อยู่ด้านล่างสุดเสมอ */
+        }
+
+        .nav-link {
+            transition: all 0.3s ease;
+        }
+
+        .nav-link:hover {
+            color: #60a5fa; /* สีฟ้าเมื่อเอาเมาส์ชี้ */
+        }
+
+        /* สำหรับหน้าที่มีเนื้อหาน้อยๆ ให้เต็มจอ */
+        .page-section {
+            min-height: calc(100vh - 200px);
+            animation: fadeIn 0.4s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* Animation สำหรับสลับปีทำเนียบ */
+        .fade-in-content {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        
+        /* สไตล์สำหรับ Banner Slider */
+        .slider-track { transition: transform 0.5s ease-in-out; }
+        .slider-dot.active { background-color: #2563eb; transform: scale(1.2); }
+        
+        /* Custom Scrollbar สำหรับตารางปฏิทินในมือถือ */
+        .calendar-scroll::-webkit-scrollbar { height: 6px; }
+        .calendar-scroll::-webkit-scrollbar-track { background: #f1f5f9; border-radius: 10px; }
+        .calendar-scroll::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+
+        /* ซ่อน Scrollbar ในสไลด์รูปภาพย่อย */
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+</head>
+<body class="text-slate-800 antialiased">
+
+    <!-- ==================== Sticky Navbar ==================== -->
+    <header class="sticky top-0 z-50 bg-white/95 backdrop-blur-sm shadow-md border-b border-mmsblue-100">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-20">
+                <!-- Logo & Brand -->
+                <div class="flex items-center cursor-pointer" onclick="navigate('home')">
+                    <img src="https://lh3.googleusercontent.com/d/1NFVYZr471woAtlLc8iCKx8j7aPiFKGrI" alt="โลโก้สภานักเรียน" class="w-12 h-12 md:w-14 md:h-14 object-contain mr-3 rounded-full bg-white shadow-sm border border-slate-100 p-0.5 transition transform hover:scale-105">
+                    <div>
+                        <h1 class="font-bold text-lg md:text-xl text-mmsblue-900 leading-tight">สภานักเรียน</h1>
+                        <p class="text-xs md:text-sm text-mmsblue-600">โรงเรียนเมืองมุกวิทยาคม</p>
+                    </div>
+                </div>
+
+                <!-- Desktop Navigation -->
+                <nav class="hidden md:flex space-x-1 lg:space-x-4">
+                    <button data-target="home" onclick="navigate('home')" class="nav-link active px-3 py-2 text-sm lg:text-base font-medium text-mmsblue-600 border-b-2 border-mmsblue-600">หน้าแรก</button>
+                    <button data-target="news" onclick="navigate('news')" class="nav-link px-3 py-2 text-sm lg:text-base font-medium text-slate-600 border-b-2 border-transparent hover:border-mmsblue-400">ข่าวสาร</button>
+                    <button data-target="announcements" onclick="navigate('announcements')" class="nav-link px-3 py-2 text-sm lg:text-base font-medium text-slate-600 border-b-2 border-transparent hover:border-mmsblue-400">ประกาศ</button>
+                    <button data-target="activities" onclick="navigate('activities')" class="nav-link px-3 py-2 text-sm lg:text-base font-medium text-slate-600 border-b-2 border-transparent hover:border-mmsblue-400">กิจกรรม</button>
+                    <button data-target="calendar" onclick="navigate('calendar')" class="nav-link px-3 py-2 text-sm lg:text-base font-medium text-slate-600 border-b-2 border-transparent hover:border-mmsblue-400">ปฏิทินกิจกรรม</button>
+                    <button data-target="directory" onclick="navigate('directory')" class="nav-link px-3 py-2 text-sm lg:text-base font-medium text-slate-600 border-b-2 border-transparent hover:border-mmsblue-400">ทำเนียบ</button>
+                    <button data-target="contact" onclick="navigate('contact')" class="nav-link px-3 py-2 text-sm lg:text-base font-medium text-slate-600 border-b-2 border-transparent hover:border-mmsblue-400">ติดต่อเรา</button>
+                </nav>
+
+                <!-- Mobile Menu Button -->
+                <div class="md:hidden flex items-center">
+                    <button id="mobile-menu-btn" class="text-slate-600 hover:text-mmsblue-600 focus:outline-none p-2">
+                        <i class="fa-solid fa-bars text-2xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Navigation Menu -->
+        <div id="mobile-menu" class="hidden md:hidden bg-white border-t border-slate-100 shadow-inner absolute w-full">
+            <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+                <button data-target="home" onclick="navigate('home')" class="nav-link mobile active block w-full text-left px-3 py-2 rounded-md text-base font-medium text-mmsblue-600 bg-mmsblue-50">หน้าแรก</button>
+                <button data-target="news" onclick="navigate('news')" class="nav-link mobile block w-full text-left px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:bg-mmsblue-50 hover:text-mmsblue-600">ข่าวสาร</button>
+                <button data-target="announcements" onclick="navigate('announcements')" class="nav-link mobile block w-full text-left px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:bg-mmsblue-50 hover:text-mmsblue-600">ประกาศ</button>
+                <button data-target="activities" onclick="navigate('activities')" class="nav-link mobile block w-full text-left px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:bg-mmsblue-50 hover:text-mmsblue-600">กิจกรรม</button>
+                <button data-target="calendar" onclick="navigate('calendar')" class="nav-link mobile block w-full text-left px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:bg-mmsblue-50 hover:text-mmsblue-600">ปฏิทินกิจกรรม</button>
+                <button data-target="directory" onclick="navigate('directory')" class="nav-link mobile block w-full text-left px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:bg-mmsblue-50 hover:text-mmsblue-600">ทำเนียบ</button>
+                <button data-target="contact" onclick="navigate('contact')" class="nav-link mobile block w-full text-left px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:bg-mmsblue-50 hover:text-mmsblue-600">ติดต่อเรา</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- ==================== Main Content Area ==================== -->
+    <main class="w-full">
+
+        <!-- 1. หน้าแรก (Home) -->
+        <section id="home" class="page-section">
+            
+            <!-- Hero Banner Container -->
+            <div id="hero-banner-container" class="w-full bg-slate-100 relative shadow-md">
+                <div class="flex items-center justify-center aspect-video w-full max-w-7xl mx-auto bg-slate-200 animate-pulse">
+                    <i class="fa-solid fa-spinner fa-spin text-4xl text-slate-400"></i>
+                </div>
+            </div>
+
+            <!-- ข่าวสารล่าสุด (Latest News Highlight) -->
+            <div class="container mx-auto px-4 mt-12 mb-8">
+                <div class="flex justify-between items-end mb-6">
+                    <div>
+                        <h2 class="text-2xl font-bold text-mmsblue-900">ข่าวสารล่าสุด</h2>
+                        <div class="w-16 h-1 bg-mmsblue-400 mt-2 rounded-full"></div>
+                    </div>
+                    <button onclick="navigate('news')" class="text-sm font-semibold text-mmsblue-600 hover:text-mmsblue-800 transition flex items-center">
+                        ดูข่าวทั้งหมด <i class="fa-solid fa-arrow-right ml-1"></i>
+                    </button>
+                </div>
+                
+                <div id="latest-news-container" class="bg-white rounded-2xl shadow-md border border-slate-100 overflow-hidden relative">
+                    <!-- Loading Indicator -->
+                    <div class="p-12 text-center w-full">
+                        <i class="fa-solid fa-circle-notch fa-spin text-3xl text-mmsblue-500 mb-3 block"></i>
+                        <p class="text-slate-500 font-medium">กำลังโหลดข่าวสารล่าสุด...</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ประกาศล่าสุด (Latest Announcement Highlight) -->
+            <div class="container mx-auto px-4 mb-16 mt-8">
+                <div class="flex justify-between items-end mb-6">
+                    <div>
+                        <h2 class="text-2xl font-bold text-mmsblue-900">ประกาศล่าสุด</h2>
+                        <div class="w-16 h-1 bg-mmsblue-400 mt-2 rounded-full"></div>
+                    </div>
+                    <button onclick="navigate('announcements')" class="text-sm font-semibold text-mmsblue-600 hover:text-mmsblue-800 transition flex items-center">
+                        ดูประกาศทั้งหมด <i class="fa-solid fa-arrow-right ml-1"></i>
+                    </button>
+                </div>
+                
+                <div id="latest-announcement-container" class="bg-white rounded-2xl shadow-md border border-slate-100 overflow-hidden relative">
+                    <!-- Loading Indicator -->
+                    <div class="p-12 text-center w-full">
+                        <i class="fa-solid fa-circle-notch fa-spin text-3xl text-mmsblue-500 mb-3 block"></i>
+                        <p class="text-slate-500 font-medium">กำลังโหลดประกาศล่าสุด...</p>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- 2. ข่าวสาร (News) -->
+        <section id="news" class="page-section hidden py-16 bg-slate-50">
+            <div class="container mx-auto px-4">
+                <div class="text-center mb-8">
+                    <h2 class="text-3xl font-bold text-mmsblue-900 mb-3">ข่าวสารประชาสัมพันธ์</h2>
+                    <div class="w-20 h-1 bg-mmsblue-400 mx-auto rounded-full"></div>
+                    <p class="text-slate-600 mt-4">อัปเดตข่าวสาร และความเคลื่อนไหวล่าสุดของสภานักเรียน</p>
+                </div>
+
+                <!-- ตัวกรองเดือน/ปี ข่าวสาร -->
+                <div id="news-filter-container" class="flex justify-center mb-8 hidden">
+                    <div class="flex flex-wrap items-center justify-center gap-x-4 gap-y-3 bg-slate-50 py-3 px-6 rounded-2xl sm:rounded-full border border-slate-200 shadow-sm transition hover:shadow-md">
+                        <div class="flex items-center w-full sm:w-auto justify-center">
+                            <i class="fa-solid fa-filter text-mmsblue-500 mr-2 hidden sm:block"></i>
+                            <label for="news-month-filter" class="text-sm font-semibold text-slate-700 mr-2">เดือน:</label>
+                            <select id="news-month-filter" class="bg-white border border-slate-300 text-slate-800 text-sm rounded-lg focus:ring-mmsblue-500 focus:border-mmsblue-500 block px-3 py-1.5 outline-none cursor-pointer font-medium shadow-sm transition w-32">
+                                <option value="all">ทุกเดือน</option>
+                            </select>
+                        </div>
+                        <div class="flex items-center w-full sm:w-auto justify-center">
+                            <label for="news-year-filter" class="text-sm font-semibold text-slate-700 mr-2">ปี:</label>
+                            <select id="news-year-filter" class="bg-white border border-slate-300 text-slate-800 text-sm rounded-lg focus:ring-mmsblue-500 focus:border-mmsblue-500 block px-3 py-1.5 outline-none cursor-pointer font-medium shadow-sm transition w-28">
+                                <option value="all">ทุกปี</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="news-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <!-- Loading Indicator -->
+                    <div class="col-span-full text-center py-12">
+                        <i class="fa-solid fa-circle-notch fa-spin text-4xl text-mmsblue-500 mb-3 block"></i>
+                        <p class="text-slate-500 font-medium">กำลังโหลดข่าวสาร...</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. ประกาศ (Announcements) -->
+        <section id="announcements" class="page-section hidden py-16 bg-white">
+            <div class="container mx-auto px-4">
+                <div class="text-center mb-8">
+                    <h2 class="text-3xl font-bold text-mmsblue-900 mb-3">ประกาศจากทางโรงเรียนและสภาฯ</h2>
+                    <div class="w-20 h-1 bg-mmsblue-400 mx-auto rounded-full"></div>
+                    <p class="text-slate-600 mt-4">ประกาศสำคัญ นโยบาย และคำชี้แจงต่างๆ</p>
+                </div>
+
+                <!-- ตัวกรองเดือน/ปี ประกาศ -->
+                <div id="announcements-filter-container" class="flex justify-center mb-8 hidden">
+                    <div class="flex flex-wrap items-center justify-center gap-x-4 gap-y-3 bg-slate-50 py-3 px-6 rounded-2xl sm:rounded-full border border-slate-200 shadow-sm transition hover:shadow-md">
+                        <div class="flex items-center w-full sm:w-auto justify-center">
+                            <i class="fa-solid fa-filter text-mmsblue-500 mr-2 hidden sm:block"></i>
+                            <label for="announcements-month-filter" class="text-sm font-semibold text-slate-700 mr-2">เดือน:</label>
+                            <select id="announcements-month-filter" class="bg-white border border-slate-300 text-slate-800 text-sm rounded-lg focus:ring-mmsblue-500 focus:border-mmsblue-500 block px-3 py-1.5 outline-none cursor-pointer font-medium shadow-sm transition w-32">
+                                <option value="all">ทุกเดือน</option>
+                            </select>
+                        </div>
+                        <div class="flex items-center w-full sm:w-auto justify-center">
+                            <label for="announcements-year-filter" class="text-sm font-semibold text-slate-700 mr-2">ปี:</label>
+                            <select id="announcements-year-filter" class="bg-white border border-slate-300 text-slate-800 text-sm rounded-lg focus:ring-mmsblue-500 focus:border-mmsblue-500 block px-3 py-1.5 outline-none cursor-pointer font-medium shadow-sm transition w-28">
+                                <option value="all">ทุกปี</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="announcements-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 items-start">
+                    <!-- Loading Indicator -->
+                    <div class="col-span-full text-center py-12">
+                        <i class="fa-solid fa-circle-notch fa-spin text-4xl text-mmsblue-500 mb-3 block"></i>
+                        <p class="text-slate-500 font-medium">กำลังโหลดประกาศ...</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. กิจกรรมสภานักเรียน (Activities) -->
+        <section id="activities" class="page-section hidden py-16 bg-slate-50">
+            <div class="container mx-auto px-4">
+                <div class="text-center mb-8">
+                    <h2 class="text-3xl font-bold text-mmsblue-900 mb-3">กิจกรรมสภานักเรียน</h2>
+                    <div class="w-20 h-1 bg-mmsblue-400 mx-auto rounded-full"></div>
+                    <p class="text-slate-600 mt-4">ประมวลภาพและรายละเอียดกิจกรรมต่างๆ ที่จัดขึ้นโดยสภานักเรียน</p>
+                </div>
+
+                <!-- ตัวกรองเดือน/ปี กิจกรรม -->
+                <div id="activities-filter-container" class="flex justify-center mb-8 hidden">
+                    <div class="flex flex-wrap items-center justify-center gap-x-4 gap-y-3 bg-slate-50 py-3 px-6 rounded-2xl sm:rounded-full border border-slate-200 shadow-sm transition hover:shadow-md">
+                        <div class="flex items-center w-full sm:w-auto justify-center">
+                            <i class="fa-solid fa-filter text-mmsblue-500 mr-2 hidden sm:block"></i>
+                            <label for="activities-month-filter" class="text-sm font-semibold text-slate-700 mr-2">เดือน:</label>
+                            <select id="activities-month-filter" class="bg-white border border-slate-300 text-slate-800 text-sm rounded-lg focus:ring-mmsblue-500 focus:border-mmsblue-500 block px-3 py-1.5 outline-none cursor-pointer font-medium shadow-sm transition w-32">
+                                <option value="all">ทุกเดือน</option>
+                            </select>
+                        </div>
+                        <div class="flex items-center w-full sm:w-auto justify-center">
+                            <label for="activities-year-filter" class="text-sm font-semibold text-slate-700 mr-2">ปี:</label>
+                            <select id="activities-year-filter" class="bg-white border border-slate-300 text-slate-800 text-sm rounded-lg focus:ring-mmsblue-500 focus:border-mmsblue-500 block px-3 py-1.5 outline-none cursor-pointer font-medium shadow-sm transition w-28">
+                                <option value="all">ทุกปี</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="activities-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div class="col-span-full text-center py-12"><i class="fa-solid fa-circle-notch fa-spin text-4xl text-mmsblue-500 mb-3 block"></i><p class="text-slate-500 font-medium">กำลังโหลดภาพกิจกรรม...</p></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 5. ปฏิทินกิจกรรม (Calendar) แบบตาราง -->
+        <section id="calendar" class="page-section hidden py-16 bg-white">
+            <div class="container mx-auto px-4 max-w-6xl">
+                <div class="text-center mb-10">
+                    <h2 class="text-3xl font-bold text-mmsblue-900 mb-3">ปฏิทินกิจกรรมโรงเรียน</h2>
+                    <div class="w-20 h-1 bg-mmsblue-400 mx-auto rounded-full"></div>
+                </div>
+
+                <!-- Navigation เดือน/ปี สำหรับปฏิทิน -->
+                <div class="flex flex-col sm:flex-row justify-between items-center bg-white border border-slate-200 p-4 rounded-t-2xl shadow-sm gap-4">
+                    <button onclick="changeCalendarMonth(-1)" class="w-full sm:w-auto px-4 py-2 bg-slate-50 hover:bg-slate-100 text-slate-600 rounded-lg font-medium transition active:scale-95 border border-slate-200 flex items-center justify-center">
+                        <i class="fa-solid fa-chevron-left mr-2"></i> เดือนก่อนหน้า
+                    </button>
+                    
+                    <h3 id="calendar-header-title" class="text-xl md:text-2xl font-bold text-slate-800 text-center">ประจำเดือน ...</h3>
+                    
+                    <button onclick="changeCalendarMonth(1)" class="w-full sm:w-auto px-4 py-2 bg-slate-50 hover:bg-slate-100 text-slate-600 rounded-lg font-medium transition active:scale-95 border border-slate-200 flex items-center justify-center">
+                        เดือนถัดไป <i class="fa-solid fa-chevron-right ml-2"></i>
+                    </button>
+                </div>
+
+                <!-- Calendar Grid Container -->
+                <div class="overflow-x-auto calendar-scroll bg-white shadow-md rounded-b-2xl border border-t-0 border-slate-200">
+                    <div class="min-w-[800px]"> <!-- บังคับความกว้างขั้นต่ำเพื่อไม่ให้ตารางพังในมือถือ -->
+                        <!-- หัวตาราง (วันในสัปดาห์) -->
+                        <div class="grid grid-cols-7 bg-slate-200 border-b border-slate-300">
+                            <div class="py-3 text-center font-bold text-red-600 text-sm md:text-base border-r border-slate-300 bg-slate-100/50">อาทิตย์</div>
+                            <div class="py-3 text-center font-bold text-slate-700 text-sm md:text-base border-r border-slate-300 bg-slate-100/50">จันทร์</div>
+                            <div class="py-3 text-center font-bold text-slate-700 text-sm md:text-base border-r border-slate-300 bg-slate-100/50">อังคาร</div>
+                            <div class="py-3 text-center font-bold text-slate-700 text-sm md:text-base border-r border-slate-300 bg-slate-100/50">พุธ</div>
+                            <div class="py-3 text-center font-bold text-slate-700 text-sm md:text-base border-r border-slate-300 bg-slate-100/50">พฤหัสบดี</div>
+                            <div class="py-3 text-center font-bold text-slate-700 text-sm md:text-base border-r border-slate-300 bg-slate-100/50">ศุกร์</div>
+                            <div class="py-3 text-center font-bold text-red-600 text-sm md:text-base bg-slate-100/50">เสาร์</div>
+                        </div>
+                        
+                        <!-- ตัวตารางวันที่ (จะถูกเติมด้วย JavaScript) -->
+                        <div id="calendar-grid" class="grid grid-cols-7 bg-slate-300 gap-px border-b border-slate-300">
+                            <!-- ช่องวันที่โหลด -->
+                            <div class="col-span-7 bg-white py-20 text-center">
+                                <i class="fa-solid fa-spinner fa-spin text-3xl text-mmsblue-400"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- หมายเหตุด้านล่างปฏิทิน -->
+                <div class="mt-4 text-sm text-red-600 font-medium">
+                    หมายเหตุ: <span id="calendar-last-update" class="text-slate-600 font-normal">กำลังโหลด...</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- 6. ทำเนียบสภานักเรียน (Members Directory) -->
+        <section id="directory" class="page-section hidden py-16 bg-slate-50">
+            <div class="container mx-auto px-4">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl font-bold text-mmsblue-900 mb-3">ทำเนียบสภานักเรียน</h2>
+                    <div class="w-20 h-1 bg-mmsblue-400 mx-auto rounded-full"></div>
+                    <p class="text-slate-600 mt-4">รายชื่อคณะกรรมการสภานักเรียนโรงเรียนเมืองมุกวิทยาคม</p>
+                </div>
+
+                <!-- Year Selector Dropdown -->
+                <div id="year-selector-container" class="flex justify-center mb-10 hidden">
+                    <div class="flex items-center space-x-3 bg-white py-2 px-5 rounded-full border border-slate-200 shadow-sm transition hover:shadow-md">
+                        <label for="year-select" class="text-sm font-semibold text-slate-700"><i class="fa-solid fa-filter text-mmsblue-500 mr-1"></i> เลือกปีการศึกษา:</label>
+                        <select id="year-select" class="bg-slate-50 border border-slate-300 text-slate-800 text-sm rounded-lg focus:ring-mmsblue-500 focus:border-mmsblue-500 block px-3 py-1.5 outline-none cursor-pointer font-medium shadow-sm transition">
+                        </select>
+                    </div>
+                </div>
+                
+                <div id="members-container" class="max-w-6xl mx-auto space-y-16">
+                    <div class="text-center py-12"><i class="fa-solid fa-circle-notch fa-spin text-4xl text-mmsblue-500 mb-3 block"></i><p class="text-slate-500 font-medium">กำลังโหลดทำเนียบสภานักเรียน...</p></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 7. ติดต่อเรา (Contact Us) -->
+        <section id="contact" class="page-section hidden py-16 bg-white">
+            <div class="container mx-auto px-4">
+                <div class="max-w-5xl mx-auto">
+                    <div class="text-center mb-12">
+                        <h2 class="text-3xl font-bold text-mmsblue-900 mb-3">ติดต่อสภานักเรียน</h2>
+                        <div class="w-20 h-1 bg-mmsblue-400 mx-auto rounded-full"></div>
+                        <p class="text-slate-600 mt-4">มีข้อเสนอแนะ ร้องเรียน หรือสอบถามข้อมูลเพิ่มเติม สามารถติดต่อเราได้ที่นี่</p>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 bg-slate-50 rounded-2xl shadow-lg overflow-hidden border border-slate-100">
+                        <div class="bg-gradient-to-br from-mmsblue-800 to-mmsblue-600 p-10 text-white">
+                            <h3 class="text-2xl font-bold mb-6">ข้อมูลติดต่อ</h3>
+                            <div class="space-y-6">
+                                <div class="flex items-start">
+                                    <div class="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center shrink-0 mr-4"><i class="fa-solid fa-location-dot"></i></div>
+                                    <div><h4 class="font-semibold text-blue-100 text-sm mb-1">ที่ตั้งห้องสภานักเรียน</h4><p id="contact-address-text" class="text-sm leading-relaxed">กำลังโหลดข้อมูล...</p></div>
+                                </div>
+                                <div class="flex items-start">
+                                    <div class="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center shrink-0 mr-4"><i class="fa-solid fa-phone"></i></div>
+                                    <div><h4 class="font-semibold text-blue-100 text-sm mb-1">โทรศัพท์</h4><p id="contact-phone-text" class="text-sm">กำลังโหลดข้อมูล...</p></div>
+                                </div>
+                                <div class="flex items-start">
+                                    <div class="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center shrink-0 mr-4"><i class="fa-solid fa-envelope"></i></div>
+                                    <div><h4 class="font-semibold text-blue-100 text-sm mb-1">อีเมล</h4><p id="contact-email-text" class="text-sm">กำลังโหลดข้อมูล...</p></div>
+                                </div>
+                            </div>
+                            <div class="mt-12">
+                                <h4 class="font-semibold text-blue-100 text-sm mb-3">ติดตามเราทางโซเชียลมีเดีย</h4>
+                                <div class="flex flex-wrap gap-4">
+                                    <a href="#" id="contact-fb-link" target="_blank" class="w-10 h-10 rounded-full bg-white/10 hover:bg-white/30 flex items-center justify-center transition"><i class="fa-brands fa-facebook-f text-xl"></i></a>
+                                    <a href="#" id="contact-ig-link" target="_blank" class="w-10 h-10 rounded-full bg-white/10 hover:bg-white/30 flex items-center justify-center transition"><i class="fa-brands fa-instagram text-xl"></i></a>
+                                    <a href="#" id="contact-tiktok-link" target="_blank" class="w-10 h-10 rounded-full bg-white/10 hover:bg-white/30 flex items-center justify-center transition"><i class="fa-brands fa-tiktok text-xl"></i></a>
+                                    <a href="#" id="contact-yt-link" target="_blank" class="w-10 h-10 rounded-full bg-white/10 hover:bg-white/30 flex items-center justify-center transition"><i class="fa-brands fa-youtube text-xl"></i></a>
+                                    <a href="#" id="contact-line-link" target="_blank" class="w-10 h-10 rounded-full bg-white/10 hover:bg-white/30 flex items-center justify-center transition"><i class="fa-brands fa-line text-xl"></i></a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="p-10 bg-white">
+                            <h3 class="text-2xl font-bold text-slate-800 mb-6">ส่งข้อความถึงเรา</h3>
+                            <form id="contact-form">
+                                <div class="space-y-4">
+                                    <div>
+                                        <label class="block text-sm font-medium text-slate-700 mb-1">ชื่อ-นามสกุล / ชื่อเล่น (ไม่บังคับ)</label>
+                                        <input type="text" id="cf-name" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-mmsblue-500 focus:border-mmsblue-500 outline-none transition bg-slate-50 focus:bg-white" placeholder="ระบุชื่อของคุณ">
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-slate-700 mb-1">หัวข้อติดต่อ <span class="text-red-500">*</span></label>
+                                        <select required id="cf-topic" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-mmsblue-500 focus:border-mmsblue-500 outline-none transition bg-slate-50 focus:bg-white">
+                                            <option value="">เลือกหัวข้อ</option><option value="1">เสนอแนะกิจกรรม</option><option value="2">ร้องเรียนปัญหา</option><option value="3">สอบถามข้อมูล</option><option value="4">อื่นๆ</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-slate-700 mb-1">ข้อความ <span class="text-red-500">*</span></label>
+                                        <textarea required id="cf-content" rows="4" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-mmsblue-500 focus:border-mmsblue-500 outline-none transition resize-none bg-slate-50 focus:bg-white" placeholder="พิมพ์ข้อความของคุณที่นี่..."></textarea>
+                                    </div>
+                                    <button type="submit" class="w-full bg-mmsblue-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-mmsblue-700 transition duration-300 shadow-md">
+                                        ส่งข้อความ <i class="fa-solid fa-paper-plane ml-2"></i>
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- ==================== Footer ==================== -->
+    <footer class="bg-slate-900 text-slate-300 pt-12 pb-6 border-t-4 border-mmsblue-600">
+        <div class="container mx-auto px-4 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8 text-center md:text-left">
+                <div class="flex flex-col items-center md:items-start">
+                    <div class="flex items-center mb-4"><img src="https://lh3.googleusercontent.com/d/1NFVYZr471woAtlLc8iCKx8j7aPiFKGrI" class="w-10 h-10 md:w-12 md:h-12 mr-3 rounded-full bg-white p-0.5"><h2 class="font-bold text-white text-lg">สภานักเรียนโรงเรียนเมืองมุกวิทยาคม</h2></div>
+                    <p class="text-sm text-slate-400 max-w-xs">"มุ่งมั่นพัฒนา สร้างสรรค์กิจกรรม เพื่อประโยชน์สูงสุดของนักเรียนและโรงเรียน"</p>
+                </div>
+                <div class="flex flex-col items-center md:items-start">
+                    <h3 class="font-bold text-white text-lg mb-4 border-b-2 border-mmsblue-500 pb-1 inline-block">ลิงก์ด่วน</h3>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="#" onclick="navigate('home'); return false;" class="hover:text-mmsblue-400 transition">หน้าแรก</a></li>
+                        <li><a href="#" onclick="navigate('news'); return false;" class="hover:text-mmsblue-400 transition">ข่าวสาร</a></li>
+                        <li><a href="#" onclick="navigate('announcements'); return false;" class="hover:text-mmsblue-400 transition">ประกาศ</a></li>
+                        <li><a href="#" onclick="navigate('activities'); return false;" class="hover:text-mmsblue-400 transition">กิจกรรมสภานักเรียน</a></li>
+                        <li><a href="#" onclick="navigate('calendar'); return false;" class="hover:text-mmsblue-400 transition">ปฏิทินกิจกรรม</a></li>
+                    </ul>
+                </div>
+                <div class="flex flex-col items-center md:items-start">
+                    <h3 class="font-bold text-white text-lg mb-4 border-b-2 border-mmsblue-500 pb-1 inline-block">ติดต่อเรา (Contact Info)</h3>
+                    <ul class="space-y-2 text-sm">
+                        <li class="flex items-center"><i class="fa-solid fa-phone mr-2 text-mmsblue-400"></i> โทร: <span id="footer-phone-text" class="ml-1">กำลังโหลด...</span></li>
+                        <li class="flex items-center"><i class="fa-solid fa-envelope mr-2 text-mmsblue-400"></i> อีเมล: <span id="footer-email-text" class="ml-1">กำลังโหลด...</span></li>
+                        <li class="mt-3">
+                            <div class="flex space-x-3 justify-center md:justify-start">
+                                <a href="#" id="footer-fb-link" target="_blank" class="text-slate-400 hover:text-white transition text-lg"><i class="fa-brands fa-facebook"></i></a>
+                                <a href="#" id="footer-ig-link" target="_blank" class="text-slate-400 hover:text-white transition text-lg"><i class="fa-brands fa-instagram"></i></a>
+                                <a href="#" id="footer-tiktok-link" target="_blank" class="text-slate-400 hover:text-white transition text-lg"><i class="fa-brands fa-tiktok"></i></a>
+                                <a href="#" id="footer-yt-link" target="_blank" class="text-slate-400 hover:text-white transition text-lg"><i class="fa-brands fa-youtube"></i></a>
+                                <a href="#" id="footer-line-link" target="_blank" class="text-slate-400 hover:text-white transition text-lg"><i class="fa-brands fa-line"></i></a>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <hr class="border-slate-800 mb-6">
+            <div class="text-center"><p class="text-sm text-slate-500">Copyright © 2026 All Rights Reserved. Muangmukwittayakom Student Council BY SUWAT PHALASUN</p></div>
+        </div>
+    </footer>
+
+    <!-- ==================== JavaScript Navigation & UI ==================== -->
+    <script>
+        // ป้องกัน HTML Injection
+        window.escapeHTML = (str) => {
+            if (!str) return '';
+            return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
+        };
+
+        function navigate(pageId) {
+            document.querySelectorAll('.page-section').forEach(sec => sec.classList.add('hidden'));
+            const targetSection = document.getElementById(pageId);
+            if (targetSection) targetSection.classList.remove('hidden');
+
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.classList.remove('active', 'text-mmsblue-600', 'border-mmsblue-600', 'bg-mmsblue-50');
+                if(!link.classList.contains('mobile')) link.classList.add('text-slate-600', 'border-transparent');
+                else link.classList.add('text-slate-700');
+            });
+
+            document.querySelectorAll(`[data-target="${pageId}"]`).forEach(link => {
+                link.classList.add('active');
+                if(!link.classList.contains('mobile')) {
+                    link.classList.remove('text-slate-600', 'border-transparent');
+                    link.classList.add('text-mmsblue-600', 'border-mmsblue-600');
+                } else {
+                    link.classList.remove('text-slate-700');
+                    link.classList.add('text-mmsblue-600', 'bg-mmsblue-50');
+                }
+            });
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            const mobileMenu = document.getElementById('mobile-menu');
+            if (!mobileMenu.classList.contains('hidden')) mobileMenu.classList.add('hidden');
+        }
+
+        document.getElementById('mobile-menu-btn').addEventListener('click', () => {
+            document.getElementById('mobile-menu').classList.toggle('hidden');
+        });
+
+        // Popup สำหรับแสดงรายละเอียดข่าว/ประกาศ พร้อมสไลเดอร์รูประบบใหม่
+        window.showDetails = (encodedData) => {
+            const data = JSON.parse(decodeURIComponent(encodedData));
+            let badgeColor = 'bg-mmsblue-600';
+            let badgeText = data.category || 'ประกาศ';
+            
+            if (data.category === 'กิจกรรม') badgeColor = 'bg-teal-500';
+            if (data.category === 'ประกาศสภานักเรียน') badgeColor = 'bg-mmsblue-600';
+            if (data.category === 'ประกาศโรงเรียน') badgeColor = 'bg-indigo-500';
+            if (data.category === 'ประกาศทั่วไป') badgeColor = 'bg-slate-500';
+
+            // จัดเตรียมรูปภาพหลายรูปให้พร้อม (รองรับทั้งแบบใหม่ที่มีหลายรูป และแบบเก่าที่มีรูปเดียว)
+            let images = [];
+            if (data.imageUrls && Array.isArray(data.imageUrls) && data.imageUrls.length > 0) {
+                images = data.imageUrls;
+            } else if (data.imageUrl) {
+                images = [data.imageUrl];
+            }
+
+            let imageHtml = '';
+            if (images.length > 0) {
+                let isDoc = (data.category === 'ประกาศสภานักเรียน' || data.category === 'ประกาศโรงเรียน' || data.category === 'ประกาศทั่วไป');
+                let imgClass = isDoc ? 'w-full h-auto object-contain max-h-[80vh] bg-slate-100' : 'w-full h-64 md:h-80 object-cover';
+
+                if (images.length === 1) {
+                    imageHtml = `<img src="${images[0]}" class="${imgClass} border-b border-slate-100" alt="Cover">`;
+                } else {
+                    // หากมีหลายรูป ให้สร้างระบบ Slider Scroll Snap
+                    const sliderId = 'slider-' + Date.now();
+                    let slidesHtml = images.map((url, index) => `
+                        <div class="min-w-full snap-center relative shrink-0">
+                            <img src="${url}" class="${imgClass}" alt="Slide ${index + 1}">
+                            <div class="absolute bottom-3 right-3 bg-black/60 text-white text-[10px] font-bold px-2.5 py-1 rounded-full backdrop-blur-sm shadow-sm">${index + 1} / ${images.length}</div>
+                        </div>
+                    `).join('');
+
+                    imageHtml = `
+                        <div class="w-full relative group border-b border-slate-100 bg-slate-100">
+                            <div id="${sliderId}" class="flex overflow-x-auto snap-x snap-mandatory hide-scrollbar scroll-smooth">
+                                ${slidesHtml}
+                            </div>
+                            <button onclick="document.getElementById('${sliderId}').scrollBy({left: -300, behavior: 'smooth'})" class="absolute left-3 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white text-slate-800 w-8 h-8 rounded-full flex items-center justify-center shadow-md opacity-0 group-hover:opacity-100 transition focus:outline-none"><i class="fa-solid fa-chevron-left"></i></button>
+                            <button onclick="document.getElementById('${sliderId}').scrollBy({left: 300, behavior: 'smooth'})" class="absolute right-3 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white text-slate-800 w-8 h-8 rounded-full flex items-center justify-center shadow-md opacity-0 group-hover:opacity-100 transition focus:outline-none"><i class="fa-solid fa-chevron-right"></i></button>
+                        </div>
+                    `;
+                }
+            } else {
+                imageHtml = `<div class="w-full h-40 bg-slate-100 flex items-center justify-center border-b border-slate-100"><i class="fa-regular fa-image text-4xl text-slate-300"></i></div>`;
+            }
+
+            Swal.fire({
+                html: `
+                    <div class="text-left font-sans flex flex-col h-full">
+                        ${imageHtml}
+                        <div class="p-6 md:p-8">
+                            <div class="mb-4 flex items-center justify-between">
+                                <span class="${badgeColor} text-white text-xs font-bold px-3 py-1 rounded-full shadow-sm">${badgeText}</span>
+                                <span class="text-sm text-slate-500 font-medium"><i class="fa-regular fa-calendar mr-1"></i> ${data.date || 'ไม่ระบุวันที่'}</span>
+                            </div>
+                            <h2 class="text-2xl md:text-3xl font-bold text-slate-800 mb-4 leading-tight">${window.escapeHTML(data.title)}</h2>
+                            <div class="text-slate-700 text-base leading-relaxed whitespace-pre-wrap mt-4 border-t border-slate-100 pt-4">${window.escapeHTML(data.content) || '<span class="text-slate-400 italic">ไม่มีรายละเอียดเพิ่มเติม</span>'}</div>
+                        </div>
+                    </div>
+                `,
+                showCloseButton: true, showConfirmButton: false, width: 700,
+                customClass: { popup: 'rounded-[1.2rem] p-0 overflow-hidden shadow-2xl font-sans', htmlContainer: '!m-0', closeButton: 'bg-white/80 hover:bg-white text-slate-800 rounded-full shadow-md m-2 focus:outline-none' }
+            });
+        };
+
+        // --- Slider Logic ---
+        let currentSlideIndex = 0;
+        let slideInterval;
+        let totalSlides = 0;
+        
+        window.initSlider = (count) => {
+            totalSlides = count;
+            if(totalSlides <= 1) return; 
+            startSlideTimer();
+            setupTouchEvents();
+        }
+
+        window.goToSlide = (index) => {
+            if (totalSlides === 0) return;
+            currentSlideIndex = index;
+            if (currentSlideIndex >= totalSlides) currentSlideIndex = 0;
+            if (currentSlideIndex < 0) currentSlideIndex = totalSlides - 1;
+            
+            const track = document.getElementById('slider-track');
+            if(track) track.style.transform = `translateX(-${currentSlideIndex * 100}%)`;
+            
+            document.querySelectorAll('.slider-dot').forEach((dot, i) => {
+                if(i === currentSlideIndex) {
+                    dot.classList.add('bg-mmsblue-600', 'scale-125');
+                    dot.classList.remove('bg-white/50');
+                } else {
+                    dot.classList.remove('bg-mmsblue-600', 'scale-125');
+                    dot.classList.add('bg-white/50');
+                }
+            });
+
+            startSlideTimer(); 
+        }
+
+        window.nextSlide = () => window.goToSlide(currentSlideIndex + 1);
+        window.prevSlide = () => window.goToSlide(currentSlideIndex - 1);
+
+        function startSlideTimer() {
+            clearInterval(slideInterval);
+            slideInterval = setInterval(window.nextSlide, 5000);
+        }
+
+        let touchStartX = 0;
+        let touchEndX = 0;
+        function setupTouchEvents() {
+            const sliderArea = document.getElementById('hero-banner-container');
+            if(!sliderArea) return;
+            sliderArea.addEventListener('touchstart', e => { touchStartX = e.changedTouches[0].screenX; }, {passive: true});
+            sliderArea.addEventListener('touchend', e => { touchEndX = e.changedTouches[0].screenX; handleSwipe(); }, {passive: true});
+        }
+        function handleSwipe() {
+            const threshold = 50; 
+            if (touchEndX < touchStartX - threshold) window.nextSlide(); 
+            if (touchEndX > touchStartX + threshold) window.prevSlide(); 
+        }
+    </script>
+
+    <!-- ==================== Firebase Setup & Data Fetching ==================== -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getFirestore, collection, getDocs, addDoc, getDoc, doc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBvYde85fsk0QgbQVUpHkX7gHH96MbK6IU",
+            authDomain: "mmwsc-app.firebaseapp.com",
+            projectId: "mmwsc-app",
+            storageBucket: "mmwsc-app.firebasestorage.app",
+            messagingSenderId: "151104958067",
+            appId: "1:151104958067:web:94f302fc9db8493550c406"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const auth = getAuth(app);
+
+        // ตัวแปรสำหรับปฏิทิน
+        let allCalendarEvents = [];
+        let currentCalMonth = new Date().getMonth();
+        let currentCalYear = new Date().getFullYear();
+
+        // ตัวแปรสำหรับแบ่งหน้า (Pagination)
+        window.paginations = {
+            news: { page: 1, data: [], render: null, limit: 9 },
+            announcements: { page: 1, data: [], render: null, limit: 9 },
+            activities: { page: 1, data: [], render: null, limit: 9 }
+        };
+
+        window.renderPaginatedGrid = (containerId, stateKey, itemRenderer, emptyMessage) => {
+            const state = window.paginations[stateKey];
+            const container = document.getElementById(containerId);
+            if (!container) return;
+
+            if (state.data.length === 0) {
+                container.innerHTML = emptyMessage;
+                return;
+            }
+
+            const totalPages = Math.ceil(state.data.length / state.limit) || 1;
+            if (state.page > totalPages) state.page = totalPages;
+            if (state.page < 1) state.page = 1;
+
+            const startIdx = (state.page - 1) * state.limit;
+            const currentData = state.data.slice(startIdx, startIdx + state.limit);
+
+            let html = currentData.map(itemRenderer).join('');
+
+            if (state.data.length > state.limit) {
+                html += `
+                <div class="col-span-full flex justify-between items-center mt-6 pt-6 border-t border-slate-200 fade-in-content">
+                    <button onclick="window.changePage('${stateKey}', -1)" class="px-4 py-2.5 bg-white border border-slate-200 rounded-xl text-sm font-bold text-slate-600 hover:bg-mmsblue-50 hover:text-mmsblue-600 transition shadow-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center" ${state.page === 1 ? 'disabled' : ''}>
+                        <i class="fa-solid fa-chevron-left mr-2"></i> ย้อนกลับ
+                    </button>
+                    <span class="text-sm font-bold text-mmsblue-600 bg-mmsblue-50 px-4 py-2 rounded-xl shadow-sm">หน้า ${state.page} / ${totalPages}</span>
+                    <button onclick="window.changePage('${stateKey}', 1)" class="px-4 py-2.5 bg-white border border-slate-200 rounded-xl text-sm font-bold text-slate-600 hover:bg-mmsblue-50 hover:text-mmsblue-600 transition shadow-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center" ${state.page === totalPages ? 'disabled' : ''}>
+                        หน้าถัดไป <i class="fa-solid fa-chevron-right ml-2"></i>
+                    </button>
+                </div>`;
+            }
+            container.innerHTML = html;
+        };
+
+        window.changePage = (stateKey, dir) => {
+            window.paginations[stateKey].page += dir;
+            if (window.paginations[stateKey].render) window.paginations[stateKey].render();
+            const sectionId = stateKey === 'members' ? 'directory' : stateKey;
+            const section = document.getElementById(sectionId);
+            if(section) {
+                const y = section.getBoundingClientRect().top + window.scrollY - 80;
+                window.scrollTo({top: y, behavior: 'smooth'});
+            }
+        };
+
+        const thaiMonthsOrder = [
+            'มกราคม', 'กุมภาพันธ์', 'มีนาคม', 'เมษายน', 'พฤษภาคม', 'มิถุนายน',
+            'กรกฎาคม', 'สิงหาคม', 'กันยายน', 'ตุลาคม', 'พฤศจิกายน', 'ธันวาคม'
+        ];
+
+        signInAnonymously(auth).then(() => {
+            loadUrgentAnnouncement(); 
+            loadBanners();
+            loadNews();
+            loadAnnouncements();
+            loadActivities();
+            loadCalendarEvents(); // โหลดข้อมูลสำหรับตารางปฏิทิน
+            loadMembers();
+            loadContact();
+        }).catch((error) => console.error("Firebase Auth Error:", error));
+
+        // ----------------------------------------------------
+        // ฟังก์ชันโหลดประกาศด่วน (Urgent Popup)
+        // ----------------------------------------------------
+        async function loadUrgentAnnouncement() {
+            try {
+                const urgentSnap = await getDoc(doc(db, "settings", "urgent"));
+                if (urgentSnap.exists()) {
+                    const data = urgentSnap.data();
+                    
+                    if (data.isActive && data.title) {
+                        const hideKey = 'hideUrgent_' + (data.updatedAt || '0');
+                        if (localStorage.getItem(hideKey)) return;
+
+                        let imageHtml = '';
+                        if (data.imageUrl) {
+                            imageHtml = `<img src="${data.imageUrl}" class="w-full h-auto max-h-[40vh] object-contain bg-slate-100 border-b border-slate-100" alt="ประกาศด่วน">`;
+                        }
+
+                        let linkHtml = '';
+                        if (data.link) {
+                            linkHtml = `<a href="${data.link}" target="_blank" class="mt-5 inline-block w-full text-center bg-mmsblue-600 text-white px-6 py-2.5 rounded-xl text-sm font-bold hover:bg-mmsblue-700 transition shadow-sm active:scale-95"><i class="fa-solid fa-link mr-2"></i> อ่านรายละเอียดเพิ่มเติม</a>`;
+                        }
+
+                        Swal.fire({
+                            html: `
+                                <div class="text-left font-sans flex flex-col h-full relative">
+                                    ${imageHtml}
+                                    <div class="p-6 md:p-8 ${imageHtml ? 'pt-6' : 'pt-10'}">
+                                        <div class="mb-3 flex items-center">
+                                            <span class="bg-red-500 text-white text-[10px] md:text-xs font-bold px-3 py-1 rounded-full shadow-sm animate-pulse"><i class="fa-solid fa-bell mr-1"></i> ประกาศด่วนจากสภาฯ</span>
+                                        </div>
+                                        <h2 class="text-xl md:text-2xl font-bold text-slate-800 mb-3 leading-tight">${window.escapeHTML(data.title)}</h2>
+                                        ${data.content ? `<div class="text-slate-600 text-sm md:text-base leading-relaxed whitespace-pre-wrap border-t border-slate-100 pt-4">${window.escapeHTML(data.content)}</div>` : ''}
+                                        ${linkHtml}
+                                    </div>
+                                    <div class="bg-slate-50 px-6 py-4 border-t border-slate-200 mt-auto rounded-b-[1.2rem] flex justify-center">
+                                        <label class="inline-flex items-center cursor-pointer group">
+                                            <input type="checkbox" id="dont-show-again" class="w-4 h-4 text-mmsblue-600 bg-white border-slate-300 rounded focus:ring-mmsblue-500 cursor-pointer">
+                                            <span class="ml-2 text-xs md:text-sm text-slate-500 font-medium group-hover:text-slate-700 transition">ไม่แสดงหน้านี้อีก</span>
+                                        </label>
+                                    </div>
+                                </div>
+                            `,
+                            showCloseButton: true, showConfirmButton: false, width: 550, padding: 0,
+                            customClass: { popup: 'rounded-[1.2rem] p-0 overflow-hidden shadow-2xl font-sans', htmlContainer: '!m-0', closeButton: 'bg-white/90 hover:bg-white text-slate-800 rounded-full shadow-md m-3 focus:outline-none z-10 transition' },
+                            willClose: () => {
+                                const checkbox = document.getElementById('dont-show-again');
+                                if (checkbox && checkbox.checked) localStorage.setItem(hideKey, 'true');
+                            }
+                        });
+                    }
+                }
+            } catch (error) { console.error("Error loading urgent:", error); }
+        }
+
+        // ----------------------------------------------------
+        // ฟังก์ชันโหลดแบนเนอร์ (Banners Slider)
+        // ----------------------------------------------------
+        async function loadBanners() {
+            const container = document.getElementById('hero-banner-container');
+            try {
+                const querySnapshot = await getDocs(collection(db, "banners"));
+                const bannersArray = [];
+                querySnapshot.forEach(doc => bannersArray.push({ id: doc.id, ...doc.data() }));
+                
+                bannersArray.sort((a, b) => (a.timestamp?.seconds || 0) - (b.timestamp?.seconds || 0));
+
+                if (bannersArray.length === 0) {
+                    container.innerHTML = `
+                        <div class="relative bg-gradient-to-r from-mmsblue-900 via-mmsblue-800 to-mmsblue-600 text-white overflow-hidden w-full aspect-video md:max-h-[500px] flex items-center justify-center">
+                            <div class="absolute inset-0 bg-black/20"></div>
+                            <div class="absolute inset-0 opacity-10" style="background-image: radial-gradient(#ffffff 1px, transparent 1px); background-size: 20px 20px;"></div>
+                            <div class="relative px-4 text-center z-10 w-full pb-10">
+                                <h2 class="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-4 sm:mb-6 text-transparent bg-clip-text bg-gradient-to-r from-white to-mmsblue-100">ขับเคลื่อนนโยบาย <br class="md:hidden"> สานใจนักเรียน</h2>
+                                <p class="text-sm sm:text-base md:text-xl text-blue-100 max-w-2xl mx-auto mb-6 sm:mb-10 px-4">สภานักเรียนโรงเรียนเมืองมุกวิทยาคม มุ่งมั่นที่จะเป็นกระบอกเสียงแทนนักเรียนทุกคน</p>
+                            </div>
+                        </div>`;
+                    return;
+                }
+
+                let slidesHtml = ''; let dotsHtml = '';
+                
+                bannersArray.forEach((banner, index) => {
+                    const isActive = index === 0;
+                    let content = banner.link ? `<a href="${banner.link}" target="_blank" class="block w-full h-full relative group cursor-pointer">` : `<div class="block w-full h-full relative">`;
+                    content += `<img src="${banner.imageUrl}" class="w-full h-full object-cover" alt="Banner ${index + 1}">`;
+                    if(banner.title) {
+                        content += `<div class="absolute bottom-0 left-0 w-full bg-gradient-to-t from-black/80 to-transparent p-6 sm:p-10 text-white"><h3 class="text-xl sm:text-3xl font-bold drop-shadow-md truncate">${banner.title}</h3></div>`;
+                    }
+                    content += banner.link ? `</a>` : `</div>`;
+                    slidesHtml += `<div class="w-full h-full flex-shrink-0 relative">${content}</div>`;
+                    dotsHtml += `<button onclick="goToSlide(${index})" class="slider-dot w-3 h-3 rounded-full transition-all duration-300 ${isActive ? 'bg-mmsblue-600 scale-125' : 'bg-white/50 hover:bg-white/80'} shadow-md"></button>`;
+                });
+
+                container.innerHTML = `
+                    <div class="w-full mx-auto relative overflow-hidden bg-slate-200">
+                        <div class="w-full max-w-7xl mx-auto relative aspect-video shadow-xl">
+                            <div id="slider-track" class="flex w-full h-full transition-transform duration-500 ease-in-out">${slidesHtml}</div>
+                            ${bannersArray.length > 1 ? `
+                            <button onclick="prevSlide()" class="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 bg-black/30 hover:bg-black/60 text-white w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center transition backdrop-blur-sm z-10 hidden sm:flex"><i class="fa-solid fa-chevron-left text-lg"></i></button>
+                            <button onclick="nextSlide()" class="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 bg-black/30 hover:bg-black/60 text-white w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center transition backdrop-blur-sm z-10 hidden sm:flex"><i class="fa-solid fa-chevron-right text-lg"></i></button>
+                            <div class="absolute bottom-4 left-0 w-full flex justify-center space-x-2 sm:space-x-3 z-10">${dotsHtml}</div>
+                            ` : ''}
+                        </div>
+                    </div>`;
+
+                if(window.initSlider) window.initSlider(bannersArray.length);
+            } catch (error) { container.innerHTML = ''; }
+        }
+
+        // ----------------------------------------------------
+        // ฟังก์ชันโหลดข่าวสาร (News)
+        // ----------------------------------------------------
+        async function loadNews() {
+            const container = document.getElementById('news-container');
+            const latestContainer = document.getElementById('latest-news-container');
+            const monthSelect = document.getElementById('news-month-filter');
+            const yearSelect = document.getElementById('news-year-filter');
+            const filterContainer = document.getElementById('news-filter-container');
+
+            try {
+                const querySnapshot = await getDocs(collection(db, "news"));
+                if (querySnapshot.empty) { 
+                    container.innerHTML = '<div class="col-span-full text-center py-10 text-slate-500"><i class="fa-regular fa-folder-open text-4xl mb-3 block text-slate-300"></i>ยังไม่มีข่าวสารในขณะนี้</div>'; 
+                    if (latestContainer) latestContainer.innerHTML = '<div class="p-10 text-center w-full text-slate-500"><i class="fa-regular fa-folder-open text-3xl mb-2 block text-slate-300"></i>ยังไม่มีข่าวสารในขณะนี้</div>';
+                    return; 
+                }
+
+                const newsArray = []; const months = new Set(); const years = new Set();
+                querySnapshot.forEach(doc => {
+                    const data = doc.data();
+                    let itemMonth = "ไม่ระบุ"; let itemYear = "ไม่ระบุ";
+                    
+                    if (data.rawDate) {
+                        const date = new Date(data.rawDate);
+                        itemMonth = date.toLocaleDateString('th-TH', { month: 'long' });
+                        itemYear = date.toLocaleDateString('th-TH', { year: 'numeric' });
+                    } else if (data.timestamp) {
+                        const date = new Date(data.timestamp.seconds * 1000);
+                        itemMonth = date.toLocaleDateString('th-TH', { month: 'long' });
+                        itemYear = date.toLocaleDateString('th-TH', { year: 'numeric' });
+                    }
+                    
+                    months.add(itemMonth); years.add(itemYear);
+                    newsArray.push({ id: doc.id, ...data, itemMonth, itemYear });
+                });
+                newsArray.sort((a, b) => (b.timestamp?.seconds || 0) - (a.timestamp?.seconds || 0));
+
+                if (latestContainer && newsArray.length > 0) {
+                    const latest = newsArray[0];
+                    let badgeColor = 'bg-mmsblue-600'; if (latest.category === 'กิจกรรม') badgeColor = 'bg-teal-500'; if (latest.category === 'ทั่วไป') badgeColor = 'bg-slate-500';
+                    let hasManyImages = latest.imageUrls && latest.imageUrls.length > 1;
+
+                    latestContainer.innerHTML = `
+                    <div onclick="showDetails('${encodeURIComponent(JSON.stringify(latest))}')" class="flex flex-col md:flex-row group cursor-pointer hover:bg-slate-50 transition duration-300 h-full border border-slate-100 rounded-[1.2rem] overflow-hidden">
+                        <div class="md:w-2/5 lg:w-1/3 relative overflow-hidden flex items-center justify-center bg-slate-100 shrink-0 h-48 md:h-auto md:min-h-[12rem] border-b md:border-b-0 md:border-r border-slate-100">
+                            ${latest.imageUrl ? `<img src="${latest.imageUrl}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">` : `<i class="fa-regular fa-newspaper text-6xl text-slate-300 group-hover:scale-110 transition duration-500"></i>`}
+                            <div class="absolute top-4 left-4 ${badgeColor} text-white text-xs font-bold px-3 py-1 rounded-full shadow-sm flex items-center"><i class="fa-solid fa-fire mr-1.5"></i> ล่าสุด - ${latest.category || 'ข่าวสาร'}</div>
+                            ${hasManyImages ? `<div class="absolute bottom-3 right-3 bg-black/60 text-white text-[10px] font-bold px-2 py-1 rounded-md backdrop-blur-sm shadow-sm"><i class="fa-regular fa-images mr-1"></i> ${latest.imageUrls.length} รูป</div>` : ''}
+                        </div>
+                        <div class="p-4 md:p-5 flex flex-col flex-grow justify-start md:justify-center bg-white">
+                            <div class="flex items-center text-xs text-slate-500 mb-1.5"><i class="fa-regular fa-calendar mr-2"></i> ${latest.date || 'ไม่ระบุวันที่'}</div>
+                            <h3 class="text-base md:text-xl font-bold text-slate-800 mb-1.5 line-clamp-2 group-hover:text-mmsblue-600 transition">${latest.title}</h3>
+                            ${latest.content ? `<p class="text-slate-600 text-xs md:text-sm mb-2 line-clamp-2">${latest.content}</p>` : ''}
+                            <div class="mt-auto text-mmsblue-600 text-xs md:text-sm font-semibold flex items-center pt-2 border-t border-slate-50">อ่านรายละเอียด <i class="fa-solid fa-arrow-right ml-2 text-[10px]"></i></div>
+                        </div>
+                    </div>`;
+                }
+
+                if (monthSelect && yearSelect && filterContainer) {
+                    const sortedMonths = Array.from(months).sort((a, b) => thaiMonthsOrder.indexOf(a) - thaiMonthsOrder.indexOf(b));
+                    const sortedYears = Array.from(years).sort((a, b) => b.localeCompare(a));
+                    monthSelect.innerHTML = '<option value="all">ทุกเดือน</option>'; sortedMonths.forEach(m => { if(m !== 'ไม่ระบุ') monthSelect.innerHTML += `<option value="${m}">${m}</option>`; }); if(months.has('ไม่ระบุ')) monthSelect.innerHTML += `<option value="ไม่ระบุ">ไม่ระบุ</option>`;
+                    yearSelect.innerHTML = '<option value="all">ทุกปี</option>'; sortedYears.forEach(y => { if(y !== 'ไม่ระบุ') yearSelect.innerHTML += `<option value="${y}">${y}</option>`; }); if(years.has('ไม่ระบุ')) yearSelect.innerHTML += `<option value="ไม่ระบุ">ไม่ระบุ</option>`;
+                    
+                    if(newsArray.length > 0) filterContainer.classList.remove('hidden');
+
+                    const renderFiltered = () => {
+                        const sMonth = monthSelect.value; const sYear = yearSelect.value;
+                        window.paginations.news.data = newsArray.filter(item => (sMonth === 'all' || item.itemMonth === sMonth) && (sYear === 'all' || item.itemYear === sYear));
+                        window.paginations.news.page = 1;
+                        
+                        window.paginations.news.render = () => {
+                            window.renderPaginatedGrid('news-container', 'news', (data) => {
+                                let badgeColor = 'bg-mmsblue-600'; if (data.category === 'กิจกรรม') badgeColor = 'bg-teal-500'; if (data.category === 'ทั่วไป') badgeColor = 'bg-slate-500';
+                                let hasManyImages = data.imageUrls && data.imageUrls.length > 1;
+
+                                return `
+                                <div onclick="showDetails('${encodeURIComponent(JSON.stringify(data))}')" class="bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition duration-300 border border-slate-100 group flex flex-col cursor-pointer h-full fade-in-content">
+                                    <div class="h-48 relative overflow-hidden flex items-center justify-center bg-slate-100 shrink-0">
+                                        ${data.imageUrl ? `<img src="${data.imageUrl}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">` : `<i class="fa-regular fa-newspaper text-5xl text-slate-300 group-hover:scale-110 transition duration-500"></i>`}
+                                        <div class="absolute top-4 left-4 ${badgeColor} text-white text-xs font-bold px-3 py-1 rounded-full shadow-sm">${data.category || 'ข่าวสาร'}</div>
+                                        ${hasManyImages ? `<div class="absolute bottom-3 right-3 bg-black/60 text-white text-[10px] font-bold px-2 py-1 rounded-md backdrop-blur-sm shadow-sm"><i class="fa-regular fa-images mr-1"></i> ${data.imageUrls.length} รูป</div>` : ''}
+                                    </div>
+                                    <div class="p-4 md:p-5 flex flex-col flex-grow bg-white">
+                                        <div class="flex items-center text-xs text-slate-500 mb-1.5"><i class="fa-regular fa-calendar mr-2"></i> ${data.date || 'ไม่ระบุวันที่'}</div>
+                                        <h3 class="text-base md:text-lg font-bold text-slate-800 mb-1.5 line-clamp-2 group-hover:text-mmsblue-600 transition">${data.title}</h3>
+                                        ${data.content ? `<p class="text-slate-600 text-xs md:text-sm mb-2 line-clamp-2 flex-grow">${data.content}</p>` : ''}
+                                        <div class="mt-auto text-mmsblue-600 text-xs md:text-sm font-semibold flex items-center pt-2 border-t border-slate-50 opacity-100 md:opacity-0 group-hover:opacity-100 transition">อ่านรายละเอียด <i class="fa-solid fa-arrow-right ml-2 text-[10px]"></i></div>
+                                    </div>
+                                </div>`;
+                            }, '<div class="col-span-full text-center py-10 text-slate-500"><i class="fa-regular fa-folder-open text-4xl mb-3 block text-slate-300"></i>ไม่มีข่าวสารในเดือน/ปีที่เลือก</div>');
+                        };
+                        window.paginations.news.render();
+                    };
+                    monthSelect.addEventListener('change', renderFiltered); yearSelect.addEventListener('change', renderFiltered); renderFiltered();
+                }
+            } catch (error) { 
+                container.innerHTML = '<div class="col-span-full text-center py-10 text-red-500">เกิดข้อผิดพลาด</div>'; 
+                if (latestContainer) latestContainer.innerHTML = '<div class="text-center py-10 text-red-500 w-full">เกิดข้อผิดพลาด</div>';
+            }
+        }
+
+        // ----------------------------------------------------
+        // ฟังก์ชันโหลดประกาศ (Announcements)
+        // ----------------------------------------------------
+        async function loadAnnouncements() {
+            const container = document.getElementById('announcements-container');
+            const latestContainer = document.getElementById('latest-announcement-container'); 
+            const monthSelect = document.getElementById('announcements-month-filter');
+            const yearSelect = document.getElementById('announcements-year-filter');
+            const filterContainer = document.getElementById('announcements-filter-container');
+
+            try {
+                const querySnapshot = await getDocs(collection(db, "announcements"));
+                if (querySnapshot.empty) { 
+                    container.innerHTML = '<div class="col-span-full text-center py-10 text-slate-500"><i class="fa-solid fa-bullhorn text-4xl mb-3 block text-slate-300"></i>ยังไม่มีประกาศในขณะนี้</div>'; 
+                    if (latestContainer) latestContainer.innerHTML = '<div class="p-10 text-center w-full text-slate-500"><i class="fa-solid fa-bullhorn text-3xl mb-2 block text-slate-300"></i>ยังไม่มีประกาศในขณะนี้</div>';
+                    return; 
+                }
+                
+                const annArray = []; const months = new Set(); const years = new Set();
+                querySnapshot.forEach(doc => {
+                    const data = doc.data();
+                    let itemMonth = "ไม่ระบุ"; let itemYear = "ไม่ระบุ";
+                    
+                    if (data.rawDate) {
+                        const date = new Date(data.rawDate);
+                        itemMonth = date.toLocaleDateString('th-TH', { month: 'long' });
+                        itemYear = date.toLocaleDateString('th-TH', { year: 'numeric' });
+                    } else if (data.timestamp) {
+                        const date = new Date(data.timestamp.seconds * 1000);
+                        itemMonth = date.toLocaleDateString('th-TH', { month: 'long' });
+                        itemYear = date.toLocaleDateString('th-TH', { year: 'numeric' });
+                    }
+                    
+                    months.add(itemMonth); years.add(itemYear);
+                    annArray.push({ id: doc.id, ...data, itemMonth, itemYear });
+                });
+                annArray.sort((a, b) => (b.timestamp?.seconds || 0) - (a.timestamp?.seconds || 0));
+
+                if (latestContainer && annArray.length > 0) {
+                    const latest = annArray[0];
+                    let badgeColor = 'bg-mmsblue-600'; if (latest.category === 'ประกาศโรงเรียน') badgeColor = 'bg-indigo-500'; if (latest.category === 'ประกาศทั่วไป') badgeColor = 'bg-slate-500';
+                    let imageContainerClass = (latest.category === 'ประกาศสภานักเรียน' || latest.category === 'ประกาศโรงเรียน') ? 'md:w-2/5 lg:w-1/3 h-56 md:h-auto md:min-h-[14rem] relative overflow-hidden flex items-center justify-center bg-slate-100 shrink-0 border-b md:border-b-0 md:border-r border-slate-100' : 'md:w-2/5 lg:w-1/3 relative overflow-hidden flex items-center justify-center bg-slate-100 shrink-0 h-48 md:h-auto md:min-h-[12rem] border-b md:border-b-0 md:border-r border-slate-100';
+                    let imageClass = (latest.category === 'ประกาศสภานักเรียน' || latest.category === 'ประกาศโรงเรียน') ? 'w-full h-full object-cover object-top group-hover:scale-105 transition duration-500' : 'w-full h-full object-contain p-2 max-h-48 md:max-h-full group-hover:scale-105 transition duration-500';
+                    let hasManyImages = latest.imageUrls && latest.imageUrls.length > 1;
+
+                    latestContainer.innerHTML = `
+                    <div onclick="showDetails('${encodeURIComponent(JSON.stringify(latest))}')" class="flex flex-col md:flex-row group cursor-pointer hover:bg-slate-50 transition duration-300 border border-slate-100 rounded-[1.2rem] overflow-hidden h-full">
+                        <div class="${imageContainerClass}">
+                            ${latest.imageUrl ? `<img src="${latest.imageUrl}" class="${imageClass}">` : `<i class="fa-solid fa-bullhorn text-6xl text-slate-300 group-hover:scale-110 transition duration-500"></i>`}
+                            <div class="absolute top-4 left-4 ${badgeColor} text-white text-xs font-bold px-3 py-1 rounded-full shadow-sm flex items-center"><i class="fa-solid fa-fire mr-1.5"></i> ล่าสุด - ${latest.category || 'ประกาศ'}</div>
+                            ${hasManyImages ? `<div class="absolute bottom-3 right-3 bg-black/60 text-white text-[10px] font-bold px-2 py-1 rounded-md backdrop-blur-sm shadow-sm"><i class="fa-regular fa-images mr-1"></i> ${latest.imageUrls.length} รูป</div>` : ''}
+                        </div>
+                        <div class="p-4 md:p-5 flex flex-col flex-grow justify-start md:justify-center bg-white">
+                            <div class="flex items-center text-xs text-slate-500 mb-1.5"><i class="fa-regular fa-calendar mr-2"></i> ${latest.date || 'ไม่ระบุวันที่'}</div>
+                            <h3 class="text-base md:text-xl font-bold text-slate-800 mb-1.5 line-clamp-2 group-hover:text-mmsblue-600 transition">${latest.title}</h3>
+                            ${latest.content ? `<p class="text-slate-600 text-xs md:text-sm mb-2 line-clamp-2">${latest.content}</p>` : ''}
+                            <div class="mt-auto text-mmsblue-600 text-xs md:text-sm font-semibold flex items-center pt-2 border-t border-slate-50">อ่านรายละเอียด <i class="fa-solid fa-arrow-right ml-2 text-[10px]"></i></div>
+                        </div>
+                    </div>`;
+                }
+                
+                if (monthSelect && yearSelect && filterContainer) {
+                    const sortedMonths = Array.from(months).sort((a, b) => thaiMonthsOrder.indexOf(a) - thaiMonthsOrder.indexOf(b));
+                    const sortedYears = Array.from(years).sort((a, b) => b.localeCompare(a));
+                    monthSelect.innerHTML = '<option value="all">ทุกเดือน</option>'; sortedMonths.forEach(m => { if(m !== 'ไม่ระบุ') monthSelect.innerHTML += `<option value="${m}">${m}</option>`; }); if(months.has('ไม่ระบุ')) monthSelect.innerHTML += `<option value="ไม่ระบุ">ไม่ระบุ</option>`;
+                    yearSelect.innerHTML = '<option value="all">ทุกปี</option>'; sortedYears.forEach(y => { if(y !== 'ไม่ระบุ') yearSelect.innerHTML += `<option value="${y}">${y}</option>`; }); if(years.has('ไม่ระบุ')) yearSelect.innerHTML += `<option value="ไม่ระบุ">ไม่ระบุ</option>`;
+                    
+                    if(annArray.length > 0) filterContainer.classList.remove('hidden');
+
+                    const renderFiltered = () => {
+                        const sMonth = monthSelect.value; const sYear = yearSelect.value;
+                        window.paginations.announcements.data = annArray.filter(item => (sMonth === 'all' || item.itemMonth === sMonth) && (sYear === 'all' || item.itemYear === sYear));
+                        window.paginations.announcements.page = 1;
+                        
+                        window.paginations.announcements.render = () => {
+                            window.renderPaginatedGrid('announcements-container', 'announcements', (data) => {
+                                let badgeColor = 'bg-mmsblue-600'; if (data.category === 'ประกาศโรงเรียน') badgeColor = 'bg-indigo-500'; if (data.category === 'ประกาศทั่วไป') badgeColor = 'bg-slate-500';
+                                let imageContainerClass = (data.category === 'ประกาศสภานักเรียน' || data.category === 'ประกาศโรงเรียน') ? 'h-56 md:h-auto md:aspect-[1/1.414] relative overflow-hidden flex items-center justify-center bg-slate-100 shrink-0 border-b border-slate-100' : 'relative overflow-hidden flex items-center justify-center bg-slate-100 shrink-0 border-b border-slate-100 h-48';
+                                let imageClass = (data.category === 'ประกาศสภานักเรียน' || data.category === 'ประกาศโรงเรียน') ? 'w-full h-full object-cover object-top md:object-center group-hover:scale-105 transition duration-500' : 'w-full h-full object-contain p-2 group-hover:scale-105 transition duration-500';
+                                let hasManyImages = data.imageUrls && data.imageUrls.length > 1;
+                                
+                                return `
+                                <div onclick="showDetails('${encodeURIComponent(JSON.stringify(data))}')" class="bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition duration-300 border border-slate-100 group flex flex-col cursor-pointer h-full fade-in-content">
+                                    <div class="${imageContainerClass}">
+                                        ${data.imageUrl ? `<img src="${data.imageUrl}" class="${imageClass}">` : `<i class="fa-solid fa-bullhorn text-5xl text-slate-300 group-hover:scale-110 transition duration-500"></i>`}
+                                        <div class="absolute top-4 left-4 ${badgeColor} text-white text-xs font-bold px-3 py-1 rounded-full shadow-sm">${data.category || 'ประกาศ'}</div>
+                                        ${hasManyImages ? `<div class="absolute bottom-3 right-3 bg-black/60 text-white text-[10px] font-bold px-2 py-1 rounded-md backdrop-blur-sm shadow-sm"><i class="fa-regular fa-images mr-1"></i> ${data.imageUrls.length} รูป</div>` : ''}
+                                    </div>
+                                    <div class="p-4 md:p-5 flex flex-col flex-grow bg-white">
+                                        <div class="flex items-center text-xs text-slate-500 mb-1.5"><i class="fa-regular fa-calendar mr-2"></i> ${data.date || 'ไม่ระบุวันที่'}</div>
+                                        <h3 class="text-base md:text-lg font-bold text-slate-800 mb-1.5 line-clamp-2 group-hover:text-mmsblue-600 transition">${data.title}</h3>
+                                        ${data.content ? `<p class="text-slate-600 text-xs md:text-sm mb-2 line-clamp-2 flex-grow">${data.content}</p>` : ''}
+                                        <div class="mt-auto text-mmsblue-600 text-xs md:text-sm font-semibold flex items-center pt-2 border-t border-slate-50 opacity-100 md:opacity-0 group-hover:opacity-100 transition">อ่านรายละเอียด <i class="fa-solid fa-arrow-right ml-2 text-[10px]"></i></div>
+                                    </div>
+                                </div>`;
+                            }, '<div class="col-span-full text-center py-10 text-slate-500"><i class="fa-solid fa-bullhorn text-4xl mb-3 block text-slate-300"></i>ไม่มีประกาศในเดือน/ปีที่เลือก</div>');
+                        };
+                        window.paginations.announcements.render();
+                    };
+                    monthSelect.addEventListener('change', renderFiltered); yearSelect.addEventListener('change', renderFiltered); renderFiltered();
+                }
+            } catch (error) { 
+                container.innerHTML = '<div class="col-span-full text-center py-10 text-red-500">เกิดข้อผิดพลาด</div>'; 
+                if (latestContainer) latestContainer.innerHTML = '<div class="text-center py-10 text-red-500 w-full">เกิดข้อผิดพลาด</div>';
+            }
+        }
+
+        // ----------------------------------------------------
+        // ฟังก์ชันโหลดกิจกรรม (Activities)
+        // ----------------------------------------------------
+        async function loadActivities() {
+            const container = document.getElementById('activities-container');
+            const monthSelect = document.getElementById('activities-month-filter');
+            const yearSelect = document.getElementById('activities-year-filter');
+            const filterContainer = document.getElementById('activities-filter-container');
+
+            try {
+                const querySnapshot = await getDocs(collection(db, "activities"));
+                if (querySnapshot.empty) { container.innerHTML = '<div class="col-span-full text-center py-10 text-slate-500"><i class="fa-regular fa-folder-open text-4xl mb-3 block text-slate-300"></i>ยังไม่มีภาพกิจกรรม</div>'; return; }
+                
+                const actArray = []; const months = new Set(); const years = new Set();
+                querySnapshot.forEach(doc => {
+                    const data = doc.data();
+                    let itemMonth = "ไม่ระบุ"; let itemYear = "ไม่ระบุ";
+                    
+                    if (data.rawDate) {
+                        const date = new Date(data.rawDate);
+                        itemMonth = date.toLocaleDateString('th-TH', { month: 'long' });
+                        itemYear = date.toLocaleDateString('th-TH', { year: 'numeric' });
+                    } else if (data.timestamp) {
+                        const date = new Date(data.timestamp.seconds * 1000);
+                        itemMonth = date.toLocaleDateString('th-TH', { month: 'long' });
+                        itemYear = date.toLocaleDateString('th-TH', { year: 'numeric' });
+                    }
+                    
+                    months.add(itemMonth); years.add(itemYear);
+                    actArray.push({ id: doc.id, ...data, itemMonth, itemYear });
+                });
+                actArray.sort((a, b) => (b.timestamp?.seconds || 0) - (a.timestamp?.seconds || 0));
+                
+                if (monthSelect && yearSelect && filterContainer) {
+                    const sortedMonths = Array.from(months).sort((a, b) => thaiMonthsOrder.indexOf(a) - thaiMonthsOrder.indexOf(b));
+                    const sortedYears = Array.from(years).sort((a, b) => b.localeCompare(a));
+                    monthSelect.innerHTML = '<option value="all">ทุกเดือน</option>'; sortedMonths.forEach(m => { if(m !== 'ไม่ระบุ') monthSelect.innerHTML += `<option value="${m}">${m}</option>`; }); if(months.has('ไม่ระบุ')) monthSelect.innerHTML += `<option value="ไม่ระบุ">ไม่ระบุ</option>`;
+                    yearSelect.innerHTML = '<option value="all">ทุกปี</option>'; sortedYears.forEach(y => { if(y !== 'ไม่ระบุ') yearSelect.innerHTML += `<option value="${y}">${y}</option>`; }); if(years.has('ไม่ระบุ')) yearSelect.innerHTML += `<option value="ไม่ระบุ">ไม่ระบุ</option>`;
+                    
+                    if(actArray.length > 0) filterContainer.classList.remove('hidden');
+
+                    const renderFiltered = () => {
+                        const sMonth = monthSelect.value; const sYear = yearSelect.value;
+                        window.paginations.activities.data = actArray.filter(item => (sMonth === 'all' || item.itemMonth === sMonth) && (sYear === 'all' || item.itemYear === sYear));
+                        window.paginations.activities.page = 1;
+                        
+                        window.paginations.activities.render = () => {
+                            window.renderPaginatedGrid('activities-container', 'activities', (data) => {
+                                let hasManyImages = data.imageUrls && data.imageUrls.length > 1;
+                                return `
+                                <div onclick="showDetails('${encodeURIComponent(JSON.stringify(data))}')" class="bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition duration-300 border border-slate-100 group flex flex-col cursor-pointer h-full fade-in-content">
+                                    <div class="h-48 relative overflow-hidden flex items-center justify-center bg-teal-50 shrink-0">
+                                        ${data.imageUrl ? `<img src="${data.imageUrl}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">` : `<i class="fa-solid fa-images text-5xl text-teal-200 group-hover:scale-110 transition duration-500"></i>`}
+                                        <div class="absolute top-4 left-4 bg-teal-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow-sm">กิจกรรม</div>
+                                        ${hasManyImages ? `<div class="absolute bottom-3 right-3 bg-black/60 text-white text-[10px] font-bold px-2 py-1 rounded-md backdrop-blur-sm shadow-sm"><i class="fa-regular fa-images mr-1"></i> ${data.imageUrls.length} รูป</div>` : ''}
+                                    </div>
+                                    <div class="p-4 md:p-5 flex flex-col flex-grow bg-white">
+                                        <div class="flex items-center text-xs text-slate-500 mb-1.5"><i class="fa-regular fa-calendar mr-2"></i> ${data.date || 'ไม่ระบุวันที่'}</div>
+                                        <h3 class="text-base md:text-lg font-bold text-slate-800 mb-1.5 line-clamp-2 group-hover:text-teal-600 transition">${data.title}</h3>
+                                        ${data.content ? `<p class="text-slate-600 text-xs md:text-sm mb-2 line-clamp-2 flex-grow">${data.content}</p>` : ''}
+                                        <div class="mt-auto text-teal-600 text-xs md:text-sm font-semibold flex items-center pt-2 border-t border-slate-50 opacity-100 md:opacity-0 group-hover:opacity-100 transition">ดูรูปภาพและรายละเอียด <i class="fa-solid fa-arrow-right ml-2 text-[10px]"></i></div>
+                                    </div>
+                                </div>`;
+                            }, '<div class="col-span-full text-center py-10 text-slate-500"><i class="fa-regular fa-folder-open text-4xl mb-3 block text-slate-300"></i>ไม่มีกิจกรรมในเดือน/ปีที่เลือก</div>');
+                        };
+                        window.paginations.activities.render();
+                    };
+                    monthSelect.addEventListener('change', renderFiltered); yearSelect.addEventListener('change', renderFiltered); renderFiltered();
+                }
+            } catch (error) { container.innerHTML = '<div class="col-span-full text-center py-10 text-red-500">เกิดข้อผิดพลาด</div>'; }
+        }
+
+        // ----------------------------------------------------
+        // ฟังก์ชันโหลดปฏิทินกิจกรรม (Dynamic Calendar Grid)
+        // ----------------------------------------------------
+        async function loadCalendarEvents() {
+            try {
+                const querySnapshot = await getDocs(collection(db, "calendar_events"));
+                allCalendarEvents = [];
+                let lastUpdateTs = 0;
+                
+                querySnapshot.forEach(doc => {
+                    const data = doc.data();
+                    allCalendarEvents.push({ id: doc.id, ...data });
+                    if(data.timestamp && data.timestamp.seconds > lastUpdateTs) {
+                        lastUpdateTs = data.timestamp.seconds;
+                    }
+                });
+
+                if(lastUpdateTs > 0) {
+                    const lastDate = new Date(lastUpdateTs * 1000);
+                    document.getElementById('calendar-last-update').innerText = lastDate.toLocaleDateString('th-TH', { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+                } else {
+                    document.getElementById('calendar-last-update').innerText = "ยังไม่มีข้อมูล";
+                }
+
+                renderCalendarGrid();
+            } catch (error) {
+                console.error("Error loading calendar events:", error);
+                document.getElementById('calendar-grid').innerHTML = '<div class="col-span-7 bg-white py-20 text-center text-red-500">เกิดข้อผิดพลาดในการโหลดปฏิทิน</div>';
+            }
+        }
+
+        window.changeCalendarMonth = (dir) => {
+            currentCalMonth += dir;
+            if (currentCalMonth < 0) { currentCalMonth = 11; currentCalYear--; } 
+            else if (currentCalMonth > 11) { currentCalMonth = 0; currentCalYear++; }
+            renderCalendarGrid();
+        };
+
+        function renderCalendarGrid() {
+            const grid = document.getElementById('calendar-grid');
+            const titleEl = document.getElementById('calendar-header-title');
+            
+            if(!grid || !titleEl) return;
+
+            const monthNames = ["มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน", "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"];
+            titleEl.innerText = `${monthNames[currentCalMonth]} ${currentCalYear + 543}`;
+
+            const firstDay = new Date(currentCalYear, currentCalMonth, 1).getDay(); // 0 (Sun) - 6 (Sat)
+            const daysInMonth = new Date(currentCalYear, currentCalMonth + 1, 0).getDate();
+            
+            const today = new Date();
+            const todayYear = today.getFullYear();
+            const todayMonth = today.getMonth();
+            const todayDate = today.getDate();
+
+            let html = '';
+            
+            // วาดช่องว่างของเดือนก่อนหน้า
+            for (let i = 0; i < firstDay; i++) {
+                html += `<div class="bg-slate-50 min-h-[100px] md:min-h-[140px] p-1 border-r border-b border-slate-300 last:border-r-0"></div>`;
+            }
+
+            // วาดช่องวันที่
+            for (let day = 1; day <= daysInMonth; day++) {
+                // หาว่ามี Event ในวันนี้หรือไม่ (format YYYY-MM-DD)
+                const dateStr = `${currentCalYear}-${String(currentCalMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                const dayEvents = allCalendarEvents.filter(e => e.date === dateStr);
+                
+                // ตรวจสอบวันเสาร์-อาทิตย์เพื่อทำสีตัวเลข
+                const currentDateObj = new Date(currentCalYear, currentCalMonth, day);
+                const dayOfWeek = currentDateObj.getDay();
+                const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
+                const dateNumClass = isWeekend ? 'text-red-500' : 'text-slate-700';
+                
+                const isToday = (currentCalYear === todayYear && currentCalMonth === todayMonth && day === todayDate);
+                
+                let dateNumHtml = `<span class="text-sm font-bold ${dateNumClass} ml-1 mt-1 block">${day}</span>`;
+                
+                if (isToday) {
+                    dateNumHtml = `<span class="text-sm font-bold bg-mmsblue-600 text-white w-7 h-7 flex items-center justify-center rounded-full ml-1 mt-1 shadow-md">${day}</span>`;
+                }
+
+                let eventsHtml = '';
+                dayEvents.forEach(e => {
+                    if(e.colorType === 'holiday') {
+                        eventsHtml += `<div class="mt-1 md:mt-2 text-center text-[10px] md:text-xs text-red-600 font-bold px-1 py-1 bg-white border border-red-300 rounded leading-tight w-full break-words">หยุด<br>${window.escapeHTML(e.title)}</div>`;
+                    } else if (e.colorType === 'pink') {
+                        eventsHtml += `<div class="mt-1 text-center text-[10px] md:text-xs text-pink-800 bg-pink-100 border border-pink-300 px-1 py-1 rounded leading-tight w-full break-words"><span class="font-bold">${window.escapeHTML(e.title)}</span>${e.detail ? `<br><span class="font-normal text-[9px] md:text-[10px]">${window.escapeHTML(e.detail)}</span>` : ''}</div>`;
+                    } else if (e.colorType === 'yellow') {
+                        eventsHtml += `<div class="mt-1 text-center text-[10px] md:text-xs text-yellow-900 bg-yellow-300 border border-yellow-400 px-1 py-1 rounded leading-tight w-full break-words"><span class="font-bold">${window.escapeHTML(e.title)}</span>${e.detail ? `<br><span class="font-normal text-[9px] md:text-[10px]">${window.escapeHTML(e.detail)}</span>` : ''}</div>`;
+                    } else {
+                        // Default Blue
+                        eventsHtml += `<div class="mt-1 text-center text-[10px] md:text-xs text-sky-800 bg-sky-100 border border-sky-300 px-1 py-1 rounded leading-tight w-full break-words"><span class="font-bold">${window.escapeHTML(e.title)}</span>${e.detail ? `<br><span class="font-normal text-[9px] md:text-[10px]">${window.escapeHTML(e.detail)}</span>` : ''}</div>`;
+                    }
+                });
+
+                html += `
+                <div class="bg-white min-h-[100px] md:min-h-[140px] p-1 flex flex-col border-r border-b border-slate-300 last:border-r-0 relative ${isToday ? 'bg-blue-50/30' : ''}">
+                    ${dateNumHtml}
+                    <div class="flex-grow flex flex-col items-center justify-center gap-1 w-full p-1 overflow-hidden">
+                        ${eventsHtml}
+                    </div>
+                </div>`;
+            }
+
+            // เติมช่องว่างตอนท้ายให้เต็มตาราง (สัปดาห์)
+            const totalCells = firstDay + daysInMonth;
+            const remainingCells = (7 - (totalCells % 7)) % 7;
+            for (let i = 0; i < remainingCells; i++) {
+                html += `<div class="bg-slate-50 min-h-[100px] md:min-h-[140px] p-1 border-r border-b border-slate-300 last:border-r-0"></div>`;
+            }
+
+            grid.innerHTML = html;
+        }
+
+        // ----------------------------------------------------
+        // ฟังก์ชันทำเนียบ (Members) และอื่นๆ
+        // ----------------------------------------------------
+        window.groupedMembersData = {};
+        async function loadMembers() {
+            const container = document.getElementById('members-container'), selectorContainer = document.getElementById('year-selector-container'), yearSelect = document.getElementById('year-select');
+            try {
+                const querySnapshot = await getDocs(collection(db, "members"));
+                if (querySnapshot.empty) { container.innerHTML = '<div class="text-center py-10 text-slate-500"><i class="fa-solid fa-users-slash text-4xl mb-3 block text-slate-300"></i>ยังไม่มีรายชื่อสมาชิกสภานักเรียน</div>'; selectorContainer.classList.add('hidden'); return; }
+                const memArray = []; querySnapshot.forEach(doc => memArray.push({ id: doc.id, ...doc.data() }));
+                window.groupedMembersData = memArray.reduce((acc, curr) => { const year = curr.year || 'ไม่ระบุ'; if (!acc[year]) acc[year] = []; acc[year].push(curr); return acc; }, {});
+                const sortedYears = Object.keys(window.groupedMembersData).sort((a, b) => { if (a === 'ไม่ระบุ') return 1; if (b === 'ไม่ระบุ') return -1; return parseInt(b) - parseInt(a); });
+                yearSelect.innerHTML = ''; sortedYears.forEach(year => { const option = document.createElement('option'); option.value = year; option.textContent = `ปีการศึกษา ${year}`; yearSelect.appendChild(option); });
+                selectorContainer.classList.remove('hidden');
+                window.renderMembersByYear = (selectedYear) => {
+                    const membersInYear = window.groupedMembersData[selectedYear].sort((a, b) => (a.timestamp?.seconds || 0) - (b.timestamp?.seconds || 0));
+                    let membersHtml = '<div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">';
+                    membersInYear.forEach(data => { membersHtml += `<div class="text-center bg-white p-6 rounded-2xl border border-slate-100 shadow-sm hover:shadow-md transition group"><div class="w-28 h-28 mx-auto rounded-full bg-slate-200 mb-4 overflow-hidden relative border-4 border-white shadow-md flex items-center justify-center">${data.imageUrl ? `<img src="${data.imageUrl}" class="w-full h-full object-cover">` : `<div class="absolute inset-0 flex items-center justify-center bg-gradient-to-b from-mmsblue-100 to-mmsblue-300 group-hover:from-mmsblue-200 group-hover:to-mmsblue-400 transition"><i class="fa-solid fa-user text-4xl text-white"></i></div>`}</div><h4 class="font-bold text-slate-800 text-lg mb-1">${data.name}</h4><p class="text-sm font-medium text-mmsblue-600 bg-mmsblue-50 py-1 px-3 rounded-full inline-block">${data.role}</p></div>`; });
+                    membersHtml += '</div>';
+                    container.innerHTML = `<div class="fade-in-content mb-12"><div class="flex items-center gap-4 mb-8"><div class="h-px bg-slate-200 flex-1"></div><h3 class="text-2xl font-bold text-slate-700 bg-white px-4 border-2 border-slate-100 rounded-full py-1 shadow-sm"><i class="fa-solid fa-graduation-cap text-mmsblue-500 mr-2"></i> ทำเนียบปี ${selectedYear}</h3><div class="h-px bg-slate-200 flex-1"></div></div>${membersHtml}</div>`;
+                };
+                yearSelect.addEventListener('change', e => window.renderMembersByYear(e.target.value));
+                if (sortedYears.length > 0) { yearSelect.value = sortedYears[0]; window.renderMembersByYear(sortedYears[0]); }
+            } catch (error) { container.innerHTML = '<div class="text-center py-10 text-red-500">เกิดข้อผิดพลาดในการโหลดข้อมูล</div>'; }
+        }
+
+        async function loadContact() {
+            try {
+                const querySnapshot = await getDocs(collection(db, "contact"));
+                if (!querySnapshot.empty) {
+                    const data = querySnapshot.docs[0].data();
+                    if(data.address) document.getElementById('contact-address-text').innerHTML = data.address.replace(/\n/g, '<br>');
+                    if(data.phone) { document.getElementById('contact-phone-text').innerText = data.phone; document.getElementById('footer-phone-text').innerText = data.phone; }
+                    if(data.email) { document.getElementById('contact-email-text').innerText = data.email; document.getElementById('footer-email-text').innerText = data.email; }
+                    ['fb', 'ig', 'tiktok', 'yt', 'line'].forEach(key => {
+                        if(data[key]) {
+                            document.getElementById(`contact-${key}-link`).href = data[key];
+                            document.getElementById(`footer-${key}-link`).href = data[key];
+                        }
+                    });
+                }
+            } catch (error) {}
+        }
+
+        // Contact Form Handle
+        document.getElementById('contact-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const topicSelect = document.getElementById('cf-topic');
+            let typeClass = 'bg-slate-100 text-slate-600';
+            if(topicSelect.value === '1') typeClass = 'bg-teal-100 text-teal-600';
+            if(topicSelect.value === '2') typeClass = 'bg-red-100 text-red-600';
+            if(topicSelect.value === '3') typeClass = 'bg-blue-100 text-blue-600';
+
+            try {
+                Swal.fire({ title: 'กำลังส่งข้อความ...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+                
+                const today = new Date();
+                const thDate = today.toLocaleDateString('th-TH', { year: 'numeric', month: 'short', day: 'numeric' });
+
+                await addDoc(collection(db, "messages"), {
+                    name: document.getElementById('cf-name').value || 'ไม่ระบุชื่อ',
+                    type: topicSelect.options[topicSelect.selectedIndex].text,
+                    typeClass: typeClass,
+                    content: document.getElementById('cf-content').value,
+                    date: thDate, 
+                    timestamp: today
+                });
+                
+                Swal.fire({ icon: 'success', title: 'ส่งข้อความสำเร็จ!', text: 'สภานักเรียนได้รับข้อความของคุณเรียบร้อยแล้ว', confirmButtonColor: '#2563eb' });
+                e.target.reset();
+            } catch (error) {
+                Swal.fire({ icon: 'error', title: 'เกิดข้อผิดพลาด', text: 'ไม่สามารถส่งข้อความได้ในขณะนี้', confirmButtonColor: '#2563eb' });
+            }
+        });
+
+    </script>
+</body>
+</html>
