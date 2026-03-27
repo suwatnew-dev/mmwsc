@@ -1,0 +1,49 @@
+/* สไตล์เพิ่มเติมที่เขียนแบบ Custom */
+body {
+    font-family: 'Prompt', sans-serif;
+    background-color: #f8fafc; /* สีพื้นหลังสว่างๆ สบายตา */
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+main {
+    flex-grow: 1; /* ดัน Footer ให้อยู่ด้านล่างสุดเสมอ */
+}
+
+.nav-link {
+    transition: all 0.3s ease;
+}
+
+.nav-link:hover {
+    color: #60a5fa; /* สีฟ้าเมื่อเอาเมาส์ชี้ */
+}
+
+/* สำหรับหน้าที่มีเนื้อหาน้อยๆ ให้เต็มจอ */
+.page-section {
+    min-height: calc(100vh - 200px);
+    animation: fadeIn 0.4s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Animation สำหรับสลับปีทำเนียบ */
+.fade-in-content {
+    animation: fadeIn 0.5s ease-in-out;
+}
+
+/* สไตล์สำหรับ Banner Slider */
+.slider-track { transition: transform 0.5s ease-in-out; }
+.slider-dot.active { background-color: #2563eb; transform: scale(1.2); }
+
+/* Custom Scrollbar สำหรับตารางปฏิทินในมือถือ */
+.calendar-scroll::-webkit-scrollbar { height: 6px; }
+.calendar-scroll::-webkit-scrollbar-track { background: #f1f5f9; border-radius: 10px; }
+.calendar-scroll::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+
+/* ซ่อน Scrollbar ในสไลด์รูปภาพย่อย */
+.hide-scrollbar::-webkit-scrollbar { display: none; }
+.hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
