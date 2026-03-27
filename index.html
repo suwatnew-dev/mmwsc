@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="th" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>สภานักเรียนโรงเรียนเมืองมุกวิทยาคม</title>
+    <link rel="icon" type="image/png" href="[https://lh3.googleusercontent.com/d/1KZef5WERFItcNV87XPcL0ICCRGl-Q3Y7](https://lh3.googleusercontent.com/d/1KZef5WERFItcNV87XPcL0ICCRGl-Q3Y7)">
+	
+    <!-- นำเข้า Tailwind CSS สำหรับการจัดหน้าเว็บที่รวดเร็วและ Responsive -->
+    <script src="[https://cdn.tailwindcss.com](https://cdn.tailwindcss.com)"></script>
+    
+    <!-- นำเข้า Font 'Prompt' จาก Google Fonts เพื่อความสวยงามและอ่านง่าย -->
+    <link href="[https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap](https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap)" rel="stylesheet">
+    
+    <!-- นำเข้า FontAwesome สำหรับไอคอนต่างๆ -->
+    <link rel="stylesheet" href="[https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css](https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css)">
+
+    <!-- นำเข้า SweetAlert2 สำหรับแจ้งเตือนการส่งข้อความ -->
+    <script src="[https://cdn.jsdelivr.net/npm/sweetalert2@11](https://cdn.jsdelivr.net/npm/sweetalert2@11)"></script>
+
+    <!-- ตั้งค่าธีมสีและฟอนต์พื้นฐาน -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Prompt', 'sans-serif'],
+                    },
+                    colors: {
+                        mmsblue: {
+                            50: '#eff6ff',
+                            100: '#dbeafe',
+                            400: '#60a5fa',
+                            600: '#2563eb',
+                            800: '#1e40af',
+                            900: '#1e3a8a',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- นำเข้าไฟล์ CSS ภายนอก -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="text-slate-800 antialiased">
+
+    <!-- ==================== Sticky Navbar ==================== -->
+    <header class="sticky top-0 z-50 bg-white/95 backdrop-blur-sm shadow-md border-b border-mmsblue-100">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-20">
+                <!-- Logo & Brand -->
+                <div class="flex items-center cursor-pointer" onclick="navigate('home')">
+                    <img src="[https://lh3.googleusercontent.com/d/1NFVYZr471woAtlLc8iCKx8j7aPiFKGrI](https://lh3.googleusercontent.com/d/1NFVYZr471woAtlLc8iCKx8j7aPiFKGrI)" alt="โลโก้สภานักเรียน" class="w-12 h-12 md:w-14 md:h-14 object-contain mr-3 rounded-full bg-white shadow-sm border border-slate-100 p-0.5 transition transform hover:scale-105">
+                    <div>
+                        <h1 class="font-bold text-lg md:text-xl text-mmsblue-900 leading-tight">สภานักเรียน</h1>
+                        <p class="text-xs md:text-sm text-mmsblue-600">โรงเรียนเมืองมุกวิทยาคม</p>
+                    </div>
+                </div>
+
+                <!-- Desktop Navigation -->
+                <nav class="hidden md:flex space-x-1 lg:space-x-4">
+                    <button data-target="home" onclick="navigate('home')" class="nav-link active px-3 py-2 text-sm lg:text-base font-medium text-mmsblue-600 border-b-2 border-mmsblue-600">หน้าแรก</button>
+                    <button data-target="news" onclick="navigate('news')" class="nav-link px-3 py-2 text-sm lg:text-base font-medium text-slate-600 border-b-2 border-transparent hover:border-mmsblue-400">ข่าวสาร</button>
+                    <button data-target="announcements" onclick="navigate('announcements')" class="nav-link px-3 py-2 text-sm lg:text-base font-medium text-slate-600 border-b-2 border-transparent hover:border-mmsblue-400">ประกาศ</button>
+                    <button data-target="activities" onclick="navigate('activities')" class="nav-link px-3 py-2 text-sm lg:text-base font-medium text-slate-600 border-b-2 border-transparent hover:border-mmsblue-400">กิจกรรม</button>
+                    <button data-target="calendar" onclick="navigate('calendar')" class="nav-link px-3 py-2 text-sm lg:text-base font-medium text-slate-600 border-b-2 border-transparent hover:border-mmsblue-400">ปฏิทินกิจกรรม</button>
+                    <button data-target="directory" onclick="navigate('directory')" class="nav-link px-3 py-2 text-sm lg:text-base font-medium text-slate-600 border-b-2 border-transparent hover:border-mmsblue-400">ทำเนียบ</button>
+                    <button data-target="contact" onclick="navigate('contact')" class="nav-link px-3 py-2 text-sm lg:text-base font-medium text-slate-600 border-b-2 border-transparent hover:border-mmsblue-400">ติดต่อเรา</button>
+                </nav>
+
+                <!-- Mobile Menu Button -->
+                <div class="md:hidden flex items-center">
+                    <button id="mobile-menu-btn" class="text-slate-600 hover:text-mmsblue-600 focus:outline-none p-2">
+                        <i class="fa-solid fa-bars text-2xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Navigation Menu -->
+        <div id="mobile-menu" class="hidden md:hidden bg-white border-t border-slate-100 shadow-inner absolute w-full">
+            <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+                <button data-target="home" onclick="navigate('home')" class="nav-link mobile active block w-full text-left px-3 py-2 rounded-md text-base font-medium text-mmsblue-600 bg-mmsblue-50">หน้าแรก</button>
+                <button data-target="news" onclick="navigate('news')" class="nav-link mobile block w-full text-left px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:bg-mmsblue-50 hover:text-mmsblue-600">ข่าวสาร</button>
+                <button data-target="announcements" onclick="navigate('announcements')" class="nav-link mobile block w-full text-left px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:bg-mmsblue-50 hover:text-mmsblue-600">ประกาศ</button>
+                <button data-target="activities" onclick="navigate('activities')" class="nav-link mobile block w-full text-left px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:bg-mmsblue-50 hover:text-mmsblue-600">กิจกรรม</button>
+                <button data-target="calendar" onclick="navigate('calendar')" class="nav-link mobile block w-full text-left px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:bg-mmsblue-50 hover:text-mmsblue-600">ปฏิทินกิจกรรม</button>
+                <button data-target="directory" onclick="navigate('directory')" class="nav-link mobile block w-full text-left px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:bg-mmsblue-50 hover:text-mmsblue-600">ทำเนียบ</button>
+                <button data-target="contact" onclick="navigate('contact')" class="nav-link mobile block w-full text-left px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:bg-mmsblue-50 hover:text-mmsblue-600">ติดต่อเรา</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- ==================== Main Content Area ==================== -->
+    <main class="w-full">
+
+        <!-- 1. หน้าแรก (Home) -->
+        <section id="home" class="page-section">
+            
+            <!-- Hero Banner Container -->
+            <div id="hero-banner-container" class="w-full bg-slate-100 relative shadow-md">
+                <div class="flex items-center justify-center aspect-video w-full max-w-7xl mx-auto bg-slate-200 animate-pulse">
+                    <i class="fa-solid fa-spinner fa-spin text-4xl text-slate-400"></i>
+                </div>
+            </div>
+
+            <!-- ข่าวสารล่าสุด (Latest News Highlight) -->
+            <div class="container mx-auto px-4 mt-12 mb-8">
+                <div class="flex justify-between items-end mb-6">
+                    <div>
+                        <h2 class="text-2xl font-bold text-mmsblue-900">ข่าวสารล่าสุด</h2>
+                        <div class="w-16 h-1 bg-mmsblue-400 mt-2 rounded-full"></div>
+                    </div>
+                    <button onclick="navigate('news')" class="text-sm font-semibold text-mmsblue-600 hover:text-mmsblue-800 transition flex items-center">
+                        ดูข่าวทั้งหมด <i class="fa-solid fa-arrow-right ml-1"></i>
+                    </button>
+                </div>
+                
+                <div id="latest-news-container" class="bg-white rounded-2xl shadow-md border border-slate-100 overflow-hidden relative">
+                    <!-- Loading Indicator -->
+                    <div class="p-12 text-center w-full">
+                        <i class="fa-solid fa-circle-notch fa-spin text-3xl text-mmsblue-500 mb-3 block"></i>
+                        <p class="text-slate-500 font-medium">กำลังโหลดข่าวสารล่าสุด...</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ประกาศล่าสุด (Latest Announcement Highlight) -->
+            <div class="container mx-auto px-4 mb-16 mt-8">
+                <div class="flex justify-between items-end mb-6">
+                    <div>
+                        <h2 class="text-2xl font-bold text-mmsblue-900">ประกาศล่าสุด</h2>
+                        <div class="w-16 h-1 bg-mmsblue-400 mt-2 rounded-full"></div>
+                    </div>
+                    <button onclick="navigate('announcements')" class="text-sm font-semibold text-mmsblue-600 hover:text-mmsblue-800 transition flex items-center">
+                        ดูประกาศทั้งหมด <i class="fa-solid fa-arrow-right ml-1"></i>
+                    </button>
+                </div>
+                
+                <div id="latest-announcement-container" class="bg-white rounded-2xl shadow-md border border-slate-100 overflow-hidden relative">
+                    <!-- Loading Indicator -->
+                    <div class="p-12 text-center w-full">
+                        <i class="fa-solid fa-circle-notch fa-spin text-3xl text-mmsblue-500 mb-3 block"></i>
+                        <p class="text-slate-500 font-medium">กำลังโหลดประกาศล่าสุด...</p>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- 2. ข่าวสาร (News) -->
+        <section id="news" class="page-section hidden py-16 bg-slate-50">
+            <div class="container mx-auto px-4">
+                <div class="text-center mb-8">
+                    <h2 class="text-3xl font-bold text-mmsblue-900 mb-3">ข่าวสารประชาสัมพันธ์</h2>
+                    <div class="w-20 h-1 bg-mmsblue-400 mx-auto rounded-full"></div>
+                    <p class="text-slate-600 mt-4">อัปเดตข่าวสาร และความเคลื่อนไหวล่าสุดของสภานักเรียน</p>
+                </div>
+
+                <!-- ตัวกรองเดือน/ปี ข่าวสาร -->
+                <div id="news-filter-container" class="flex justify-center mb-8 hidden">
+                    <div class="flex flex-wrap items-center justify-center gap-x-4 gap-y-3 bg-slate-50 py-3 px-6 rounded-2xl sm:rounded-full border border-slate-200 shadow-sm transition hover:shadow-md">
+                        <div class="flex items-center w-full sm:w-auto justify-center">
+                            <i class="fa-solid fa-filter text-mmsblue-500 mr-2 hidden sm:block"></i>
+                            <label for="news-month-filter" class="text-sm font-semibold text-slate-700 mr-2">เดือน:</label>
+                            <select id="news-month-filter" class="bg-white border border-slate-300 text-slate-800 text-sm rounded-lg focus:ring-mmsblue-500 focus:border-mmsblue-500 block px-3 py-1.5 outline-none cursor-pointer font-medium shadow-sm transition w-32">
+                                <option value="all">ทุกเดือน</option>
+                            </select>
+                        </div>
+                        <div class="flex items-center w-full sm:w-auto justify-center">
+                            <label for="news-year-filter" class="text-sm font-semibold text-slate-700 mr-2">ปี:</label>
+                            <select id="news-year-filter" class="bg-white border border-slate-300 text-slate-800 text-sm rounded-lg focus:ring-mmsblue-500 focus:border-mmsblue-500 block px-3 py-1.5 outline-none cursor-pointer font-medium shadow-sm transition w-28">
+                                <option value="all">ทุกปี</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="news-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <!-- Loading Indicator -->
+                    <div class="col-span-full text-center py-12">
+                        <i class="fa-solid fa-circle-notch fa-spin text-4xl text-mmsblue-500 mb-3 block"></i>
+                        <p class="text-slate-500 font-medium">กำลังโหลดข่าวสาร...</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. ประกาศ (Announcements) -->
+        <section id="announcements" class="page-section hidden py-16 bg-white">
+            <div class="container mx-auto px-4">
+                <div class="text-center mb-8">
+                    <h2 class="text-3xl font-bold text-mmsblue-900 mb-3">ประกาศจากทางโรงเรียนและสภาฯ</h2>
+                    <div class="w-20 h-1 bg-mmsblue-400 mx-auto rounded-full"></div>
+                    <p class="text-slate-600 mt-4">ประกาศสำคัญ นโยบาย และคำชี้แจงต่างๆ</p>
+                </div>
+
+                <!-- ตัวกรองเดือน/ปี ประกาศ -->
+                <div id="announcements-filter-container" class="flex justify-center mb-8 hidden">
+                    <div class="flex flex-wrap items-center justify-center gap-x-4 gap-y-3 bg-slate-50 py-3 px-6 rounded-2xl sm:rounded-full border border-slate-200 shadow-sm transition hover:shadow-md">
+                        <div class="flex items-center w-full sm:w-auto justify-center">
+                            <i class="fa-solid fa-filter text-mmsblue-500 mr-2 hidden sm:block"></i>
+                            <label for="announcements-month-filter" class="text-sm font-semibold text-slate-700 mr-2">เดือน:</label>
+                            <select id="announcements-month-filter" class="bg-white border border-slate-300 text-slate-800 text-sm rounded-lg focus:ring-mmsblue-500 focus:border-mmsblue-500 block px-3 py-1.5 outline-none cursor-pointer font-medium shadow-sm transition w-32">
+                                <option value="all">ทุกเดือน</option>
+                            </select>
+                        </div>
+                        <div class="flex items-center w-full sm:w-auto justify-center">
+                            <label for="announcements-year-filter" class="text-sm font-semibold text-slate-700 mr-2">ปี:</label>
+                            <select id="announcements-year-filter" class="bg-white border border-slate-300 text-slate-800 text-sm rounded-lg focus:ring-mmsblue-500 focus:border-mmsblue-500 block px-3 py-1.5 outline-none cursor-pointer font-medium shadow-sm transition w-28">
+                                <option value="all">ทุกปี</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="announcements-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 items-start">
+                    <!-- Loading Indicator -->
+                    <div class="col-span-full text-center py-12">
+                        <i class="fa-solid fa-circle-notch fa-spin text-4xl text-mmsblue-500 mb-3 block"></i>
+                        <p class="text-slate-500 font-medium">กำลังโหลดประกาศ...</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. กิจกรรมสภานักเรียน (Activities) -->
+        <section id="activities" class="page-section hidden py-16 bg-slate-50">
+            <div class="container mx-auto px-4">
+                <div class="text-center mb-8">
+                    <h2 class="text-3xl font-bold text-mmsblue-900 mb-3">กิจกรรมสภานักเรียน</h2>
+                    <div class="w-20 h-1 bg-mmsblue-400 mx-auto rounded-full"></div>
+                    <p class="text-slate-600 mt-4">ประมวลภาพและรายละเอียดกิจกรรมต่างๆ ที่จัดขึ้นโดยสภานักเรียน</p>
+                </div>
+
+                <!-- ตัวกรองเดือน/ปี กิจกรรม -->
+                <div id="activities-filter-container" class="flex justify-center mb-8 hidden">
+                    <div class="flex flex-wrap items-center justify-center gap-x-4 gap-y-3 bg-slate-50 py-3 px-6 rounded-2xl sm:rounded-full border border-slate-200 shadow-sm transition hover:shadow-md">
+                        <div class="flex items-center w-full sm:w-auto justify-center">
+                            <i class="fa-solid fa-filter text-mmsblue-500 mr-2 hidden sm:block"></i>
+                            <label for="activities-month-filter" class="text-sm font-semibold text-slate-700 mr-2">เดือน:</label>
+                            <select id="activities-month-filter" class="bg-white border border-slate-300 text-slate-800 text-sm rounded-lg focus:ring-mmsblue-500 focus:border-mmsblue-500 block px-3 py-1.5 outline-none cursor-pointer font-medium shadow-sm transition w-32">
+                                <option value="all">ทุกเดือน</option>
+                            </select>
+                        </div>
+                        <div class="flex items-center w-full sm:w-auto justify-center">
+                            <label for="activities-year-filter" class="text-sm font-semibold text-slate-700 mr-2">ปี:</label>
+                            <select id="activities-year-filter" class="bg-white border border-slate-300 text-slate-800 text-sm rounded-lg focus:ring-mmsblue-500 focus:border-mmsblue-500 block px-3 py-1.5 outline-none cursor-pointer font-medium shadow-sm transition w-28">
+                                <option value="all">ทุกปี</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="activities-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div class="col-span-full text-center py-12"><i class="fa-solid fa-circle-notch fa-spin text-4xl text-mmsblue-500 mb-3 block"></i><p class="text-slate-500 font-medium">กำลังโหลดภาพกิจกรรม...</p></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 5. ปฏิทินกิจกรรม (Calendar) แบบตาราง -->
+        <section id="calendar" class="page-section hidden py-16 bg-white">
+            <div class="container mx-auto px-4 max-w-6xl">
+                <div class="text-center mb-10">
+                    <h2 class="text-3xl font-bold text-mmsblue-900 mb-3">ปฏิทินกิจกรรมโรงเรียน</h2>
+                    <div class="w-20 h-1 bg-mmsblue-400 mx-auto rounded-full"></div>
+                </div>
+
+                <!-- Navigation เดือน/ปี สำหรับปฏิทิน -->
+                <div class="flex flex-col sm:flex-row justify-between items-center bg-white border border-slate-200 p-4 rounded-t-2xl shadow-sm gap-4">
+                    <button onclick="changeCalendarMonth(-1)" class="w-full sm:w-auto px-4 py-2 bg-slate-50 hover:bg-slate-100 text-slate-600 rounded-lg font-medium transition active:scale-95 border border-slate-200 flex items-center justify-center">
+                        <i class="fa-solid fa-chevron-left mr-2"></i> เดือนก่อนหน้า
+                    </button>
+                    
+                    <h3 id="calendar-header-title" class="text-xl md:text-2xl font-bold text-slate-800 text-center">ประจำเดือน ...</h3>
+                    
+                    <button onclick="changeCalendarMonth(1)" class="w-full sm:w-auto px-4 py-2 bg-slate-50 hover:bg-slate-100 text-slate-600 rounded-lg font-medium transition active:scale-95 border border-slate-200 flex items-center justify-center">
+                        เดือนถัดไป <i class="fa-solid fa-chevron-right ml-2"></i>
+                    </button>
+                </div>
+
+                <!-- Calendar Grid Container -->
+                <div class="overflow-x-auto calendar-scroll bg-white shadow-md rounded-b-2xl border border-t-0 border-slate-200">
+                    <div class="min-w-[800px]"> <!-- บังคับความกว้างขั้นต่ำเพื่อไม่ให้ตารางพังในมือถือ -->
+                        <!-- หัวตาราง (วันในสัปดาห์) -->
+                        <div class="grid grid-cols-7 bg-slate-200 border-b border-slate-300">
+                            <div class="py-3 text-center font-bold text-red-600 text-sm md:text-base border-r border-slate-300 bg-slate-100/50">อาทิตย์</div>
+                            <div class="py-3 text-center font-bold text-slate-700 text-sm md:text-base border-r border-slate-300 bg-slate-100/50">จันทร์</div>
+                            <div class="py-3 text-center font-bold text-slate-700 text-sm md:text-base border-r border-slate-300 bg-slate-100/50">อังคาร</div>
+                            <div class="py-3 text-center font-bold text-slate-700 text-sm md:text-base border-r border-slate-300 bg-slate-100/50">พุธ</div>
+                            <div class="py-3 text-center font-bold text-slate-700 text-sm md:text-base border-r border-slate-300 bg-slate-100/50">พฤหัสบดี</div>
+                            <div class="py-3 text-center font-bold text-slate-700 text-sm md:text-base border-r border-slate-300 bg-slate-100/50">ศุกร์</div>
+                            <div class="py-3 text-center font-bold text-red-600 text-sm md:text-base bg-slate-100/50">เสาร์</div>
+                        </div>
+                        
+                        <!-- ตัวตารางวันที่ (จะถูกเติมด้วย JavaScript) -->
+                        <div id="calendar-grid" class="grid grid-cols-7 bg-slate-300 gap-px border-b border-slate-300">
+                            <!-- ช่องวันที่โหลด -->
+                            <div class="col-span-7 bg-white py-20 text-center">
+                                <i class="fa-solid fa-spinner fa-spin text-3xl text-mmsblue-400"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- หมายเหตุด้านล่างปฏิทิน -->
+                <div class="mt-4 text-sm text-red-600 font-medium">
+                    หมายเหตุ: <span id="calendar-last-update" class="text-slate-600 font-normal">กำลังโหลด...</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- 6. ทำเนียบสภานักเรียน (Members Directory) -->
+        <section id="directory" class="page-section hidden py-16 bg-slate-50">
+            <div class="container mx-auto px-4">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl font-bold text-mmsblue-900 mb-3">ทำเนียบสภานักเรียน</h2>
+                    <div class="w-20 h-1 bg-mmsblue-400 mx-auto rounded-full"></div>
+                    <p class="text-slate-600 mt-4">รายชื่อคณะกรรมการสภานักเรียนโรงเรียนเมืองมุกวิทยาคม</p>
+                </div>
+
+                <!-- Year Selector Dropdown -->
+                <div id="year-selector-container" class="flex justify-center mb-10 hidden">
+                    <div class="flex items-center space-x-3 bg-white py-2 px-5 rounded-full border border-slate-200 shadow-sm transition hover:shadow-md">
+                        <label for="year-select" class="text-sm font-semibold text-slate-700"><i class="fa-solid fa-filter text-mmsblue-500 mr-1"></i> เลือกปีการศึกษา:</label>
+                        <select id="year-select" class="bg-slate-50 border border-slate-300 text-slate-800 text-sm rounded-lg focus:ring-mmsblue-500 focus:border-mmsblue-500 block px-3 py-1.5 outline-none cursor-pointer font-medium shadow-sm transition">
+                        </select>
+                    </div>
+                </div>
+                
+                <div id="members-container" class="max-w-6xl mx-auto space-y-16">
+                    <div class="text-center py-12"><i class="fa-solid fa-circle-notch fa-spin text-4xl text-mmsblue-500 mb-3 block"></i><p class="text-slate-500 font-medium">กำลังโหลดทำเนียบสภานักเรียน...</p></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 7. ติดต่อเรา (Contact Us) -->
+        <section id="contact" class="page-section hidden py-16 bg-white">
+            <div class="container mx-auto px-4">
+                <div class="max-w-5xl mx-auto">
+                    <div class="text-center mb-12">
+                        <h2 class="text-3xl font-bold text-mmsblue-900 mb-3">ติดต่อสภานักเรียน</h2>
+                        <div class="w-20 h-1 bg-mmsblue-400 mx-auto rounded-full"></div>
+                        <p class="text-slate-600 mt-4">มีข้อเสนอแนะ ร้องเรียน หรือสอบถามข้อมูลเพิ่มเติม สามารถติดต่อเราได้ที่นี่</p>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 bg-slate-50 rounded-2xl shadow-lg overflow-hidden border border-slate-100">
+                        <div class="bg-gradient-to-br from-mmsblue-800 to-mmsblue-600 p-10 text-white">
+                            <h3 class="text-2xl font-bold mb-6">ข้อมูลติดต่อ</h3>
+                            <div class="space-y-6">
+                                <div class="flex items-start">
+                                    <div class="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center shrink-0 mr-4"><i class="fa-solid fa-location-dot"></i></div>
+                                    <div><h4 class="font-semibold text-blue-100 text-sm mb-1">ที่ตั้งห้องสภานักเรียน</h4><p id="contact-address-text" class="text-sm leading-relaxed">กำลังโหลดข้อมูล...</p></div>
+                                </div>
+                                <div class="flex items-start">
+                                    <div class="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center shrink-0 mr-4"><i class="fa-solid fa-phone"></i></div>
+                                    <div><h4 class="font-semibold text-blue-100 text-sm mb-1">โทรศัพท์</h4><p id="contact-phone-text" class="text-sm">กำลังโหลดข้อมูล...</p></div>
+                                </div>
+                                <div class="flex items-start">
+                                    <div class="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center shrink-0 mr-4"><i class="fa-solid fa-envelope"></i></div>
+                                    <div><h4 class="font-semibold text-blue-100 text-sm mb-1">อีเมล</h4><p id="contact-email-text" class="text-sm">กำลังโหลดข้อมูล...</p></div>
+                                </div>
+                            </div>
+                            <div class="mt-12">
+                                <h4 class="font-semibold text-blue-100 text-sm mb-3">ติดตามเราทางโซเชียลมีเดีย</h4>
+                                <div class="flex flex-wrap gap-4">
+                                    <a href="#" id="contact-fb-link" target="_blank" class="w-10 h-10 rounded-full bg-white/10 hover:bg-white/30 flex items-center justify-center transition"><i class="fa-brands fa-facebook-f text-xl"></i></a>
+                                    <a href="#" id="contact-ig-link" target="_blank" class="w-10 h-10 rounded-full bg-white/10 hover:bg-white/30 flex items-center justify-center transition"><i class="fa-brands fa-instagram text-xl"></i></a>
+                                    <a href="#" id="contact-tiktok-link" target="_blank" class="w-10 h-10 rounded-full bg-white/10 hover:bg-white/30 flex items-center justify-center transition"><i class="fa-brands fa-tiktok text-xl"></i></a>
+                                    <a href="#" id="contact-yt-link" target="_blank" class="w-10 h-10 rounded-full bg-white/10 hover:bg-white/30 flex items-center justify-center transition"><i class="fa-brands fa-youtube text-xl"></i></a>
+                                    <a href="#" id="contact-line-link" target="_blank" class="w-10 h-10 rounded-full bg-white/10 hover:bg-white/30 flex items-center justify-center transition"><i class="fa-brands fa-line text-xl"></i></a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="p-10 bg-white">
+                            <h3 class="text-2xl font-bold text-slate-800 mb-6">ส่งข้อความถึงเรา</h3>
+                            <form id="contact-form">
+                                <div class="space-y-4">
+                                    <div>
+                                        <label class="block text-sm font-medium text-slate-700 mb-1">ชื่อ-นามสกุล / ชื่อเล่น (ไม่บังคับ)</label>
+                                        <input type="text" id="cf-name" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-mmsblue-500 focus:border-mmsblue-500 outline-none transition bg-slate-50 focus:bg-white" placeholder="ระบุชื่อของคุณ">
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-slate-700 mb-1">หัวข้อติดต่อ <span class="text-red-500">*</span></label>
+                                        <select required id="cf-topic" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-mmsblue-500 focus:border-mmsblue-500 outline-none transition bg-slate-50 focus:bg-white">
+                                            <option value="">เลือกหัวข้อ</option><option value="1">เสนอแนะกิจกรรม</option><option value="2">ร้องเรียนปัญหา</option><option value="3">สอบถามข้อมูล</option><option value="4">อื่นๆ</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-slate-700 mb-1">ข้อความ <span class="text-red-500">*</span></label>
+                                        <textarea required id="cf-content" rows="4" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-mmsblue-500 focus:border-mmsblue-500 outline-none transition resize-none bg-slate-50 focus:bg-white" placeholder="พิมพ์ข้อความของคุณที่นี่..."></textarea>
+                                    </div>
+                                    <button type="submit" class="w-full bg-mmsblue-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-mmsblue-700 transition duration-300 shadow-md">
+                                        ส่งข้อความ <i class="fa-solid fa-paper-plane ml-2"></i>
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- ==================== Footer ==================== -->
+    <footer class="bg-slate-900 text-slate-300 pt-12 pb-6 border-t-4 border-mmsblue-600">
+        <div class="container mx-auto px-4 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8 text-center md:text-left">
+                <div class="flex flex-col items-center md:items-start">
+                    <div class="flex items-center mb-4"><img src="[https://lh3.googleusercontent.com/d/1NFVYZr471woAtlLc8iCKx8j7aPiFKGrI](https://lh3.googleusercontent.com/d/1NFVYZr471woAtlLc8iCKx8j7aPiFKGrI)" class="w-10 h-10 md:w-12 md:h-12 mr-3 rounded-full bg-white p-0.5"><h2 class="font-bold text-white text-lg">สภานักเรียนโรงเรียนเมืองมุกวิทยาคม</h2></div>
+                    <p class="text-sm text-slate-400 max-w-xs">"มุ่งมั่นพัฒนา สร้างสรรค์กิจกรรม เพื่อประโยชน์สูงสุดของนักเรียนและโรงเรียน"</p>
+                </div>
+                <div class="flex flex-col items-center md:items-start">
+                    <h3 class="font-bold text-white text-lg mb-4 border-b-2 border-mmsblue-500 pb-1 inline-block">ลิงก์ด่วน</h3>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="#" onclick="navigate('home'); return false;" class="hover:text-mmsblue-400 transition">หน้าแรก</a></li>
+                        <li><a href="#" onclick="navigate('news'); return false;" class="hover:text-mmsblue-400 transition">ข่าวสาร</a></li>
+                        <li><a href="#" onclick="navigate('announcements'); return false;" class="hover:text-mmsblue-400 transition">ประกาศ</a></li>
+                        <li><a href="#" onclick="navigate('activities'); return false;" class="hover:text-mmsblue-400 transition">กิจกรรมสภานักเรียน</a></li>
+                        <li><a href="#" onclick="navigate('calendar'); return false;" class="hover:text-mmsblue-400 transition">ปฏิทินกิจกรรม</a></li>
+                    </ul>
+                </div>
+                <div class="flex flex-col items-center md:items-start">
+                    <h3 class="font-bold text-white text-lg mb-4 border-b-2 border-mmsblue-500 pb-1 inline-block">ติดต่อเรา (Contact Info)</h3>
+                    <ul class="space-y-2 text-sm">
+                        <li class="flex items-center"><i class="fa-solid fa-phone mr-2 text-mmsblue-400"></i> โทร: <span id="footer-phone-text" class="ml-1">กำลังโหลด...</span></li>
+                        <li class="flex items-center"><i class="fa-solid fa-envelope mr-2 text-mmsblue-400"></i> อีเมล: <span id="footer-email-text" class="ml-1">กำลังโหลด...</span></li>
+                        <li class="mt-3">
+                            <div class="flex space-x-3 justify-center md:justify-start">
+                                <a href="#" id="footer-fb-link" target="_blank" class="text-slate-400 hover:text-white transition text-lg"><i class="fa-brands fa-facebook"></i></a>
+                                <a href="#" id="footer-ig-link" target="_blank" class="text-slate-400 hover:text-white transition text-lg"><i class="fa-brands fa-instagram"></i></a>
+                                <a href="#" id="footer-tiktok-link" target="_blank" class="text-slate-400 hover:text-white transition text-lg"><i class="fa-brands fa-tiktok"></i></a>
+                                <a href="#" id="footer-yt-link" target="_blank" class="text-slate-400 hover:text-white transition text-lg"><i class="fa-brands fa-youtube"></i></a>
+                                <a href="#" id="footer-line-link" target="_blank" class="text-slate-400 hover:text-white transition text-lg"><i class="fa-brands fa-line"></i></a>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <hr class="border-slate-800 mb-6">
+            <div class="text-center"><p class="text-sm text-slate-500">Copyright © 2026 All Rights Reserved. Muangmukwittayakom Student Council BY SUWAT PHALASUN</p></div>
+        </div>
+    </footer>
+
+    <!-- โหลดสคริปต์การทำงาน -->
+    <script src="script.js"></script>
+    <script type="module" src="firebase.js"></script>
+</body>
+</html>
